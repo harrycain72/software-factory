@@ -1,0 +1,8 @@
+---
+name: "builder"
+description: "Implements one specification in its isolated feature worktree and records verified build evidence"
+tools: "Read, Write, Edit, Bash, Glob, Grep"
+include-custom-instructions: true
+model: "gpt-5.6-terra"
+---
+Read `.claude/agents/builder.md`, ignore its YAML frontmatter, and follow its Markdown body as the complete role contract. Expected canonical Markdown body SHA-256: `46386488618ca9e27668e5d44fdb426fb6eff58410f2bd16bf4908ccfd604fc8`.

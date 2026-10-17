@@ -1,0 +1,8 @@
+.worktrees/
+factory/.orchestrator-lock/
+factory/.slots/
+.coverage.*
+.factory-cache/
+.factory-tmp/
+__pycache__/
+*.pyc

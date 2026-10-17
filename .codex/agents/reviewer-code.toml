@@ -1,0 +1,4 @@
+name = "reviewer-code"
+description = "Reviews one immutable feature diff for correctness, maintainability, and test quality"
+model = "gpt-5.6-sol"
+developer_instructions = "Read .claude/agents/reviewer-code.md. Ignore that file's YAML frontmatter and follow its Markdown body as the complete role contract. Expected canonical Markdown body SHA-256: e821c151e917226eebd2136a36505c0a58f0c86eea3a516a56cd93e840c81184."

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factory board</title>
+  <style>
+    :root { color-scheme: light dark; font: 15px/1.5 system-ui, sans-serif; }
+    body { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #8886; padding: .6rem; text-align: left; vertical-align: top; }
+    th { position: sticky; top: 0; background: Canvas; }
+    code { white-space: nowrap; }
+    .muted { color: GrayText; }
+    .error { color: #c33; }
+  </style>
+</head>
+<body>
+  <header><h1>Factory board</h1><p id="updated" class="muted">Loading…</p></header>
+  <section id="batch"></section>
+  <table>
+    <thead><tr><th>Job</th><th>Story</th><th>Stage</th><th>Round</th><th>Locks</th><th>Note</th></tr></thead>
+    <tbody id="jobs"></tbody>
+  </table>
+  <p class="muted">Read-only view. The coordinator is the sole board writer.</p>
+  <script>
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    async function load() {
+      try {
+        const response = await fetch('board.json', {cache: 'no-store'});
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const board = await response.json();
+        if (board.schema_version !== 2 || !Array.isArray(board.jobs)) throw new Error('unsupported board schema');
+        document.querySelector('#updated').textContent = `Loaded ${new Date().toLocaleString()}`;
+        const batch = board.active_batch;
+        document.querySelector('#batch').innerHTML = batch
+          ? `<p><strong>${esc(batch.id)}</strong> · parallel ${esc(batch.parallel)} · release <code>${esc(batch.release_branch)}</code> · PR ${esc(batch.pull_request?.url || 'not published')}</p>`
+          : '<p class="muted">No active batch.</p>';
+        document.querySelector('#jobs').innerHTML = board.jobs.map(job => `<tr><td><code>${esc(job.id)}</code></td><td>${esc(job.story_id)}<br><span class="muted">${esc(job.title)}</span></td><td>${esc(job.stage)}</td><td>${esc(job.round)}</td><td>${esc((job.locks || []).join(', ') || 'none')}</td><td>${esc(job.note)}</td></tr>`).join('');
+      } catch (error) {
+        document.querySelector('#updated').innerHTML = `<span class="error">${esc(error.message)}</span>`;
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

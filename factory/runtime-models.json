@@ -1,0 +1,14 @@
+{
+  "defaults": {
+    "claude": "sonnet",
+    "codex": "gpt-5.6-terra",
+    "github-copilot": "gpt-5.6-terra"
+  },
+  "overrides": {
+    "reviewer-code": {
+      "claude": "opus",
+      "codex": "gpt-5.6-sol",
+      "github-copilot": "claude-opus-5.5"
+    }
+  }
+}
