@@ -3,12 +3,17 @@ PORT ?= 8000
 COMPOSE ?= docker compose
 POSTGRES_DATABASES := lunch_roulette lunch_roulette_test
 
-.PHONY: help dashboard-start db-start db-stop db-down db-reset db-crud-test migrate install test check factory-test factory-check
+.PHONY: help dashboard-start db-start db-stop db-down db-reset db-crud-test migrate factory-install-python factory-test-postgresql factory-test factory-check factory-test-python factory-lint-python factory-format-check-python factory-type-syntax-check-python
 
 help: ## Show all targets
-	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+	@awk 'BEGIN {FS = ":.*?## "; indent = "  "} \
+		/^##@@/ {printf "  \033[2m%s\033[0m\n", substr($$0, 6); indent = "    "; next} \
+		/^##@/ {printf "\n\033[1m%s\033[0m\n", substr($$0, 5); indent = "  "; next} \
+		/^[a-zA-Z0-9_.-]+:.*?## / {printf "%s\033[36m%-24s\033[0m %s\n", indent, $$1, $$2}' $(MAKEFILE_LIST)
 
-dashboard-start: ## Start the factory dashboard as a background service (PORT=8000 by default)
+##@ Dashboard
+
+dashboard-start: ## Start the factory dashboard as a background service
 	@pids=$$(lsof -ti tcp:$(PORT) -sTCP:LISTEN); \
 	if [ -n "$$pids" ]; then \
 		echo "Port $(PORT) is already in use; stopping the running service..."; \
@@ -21,6 +26,8 @@ dashboard-start: ## Start the factory dashboard as a background service (PORT=80
 	sleep 0.3; \
 	echo "Dashboard: http://localhost:$(PORT)/platform/factory/dashboard.html (pid $$(cat .factory-tmp/dashboard.pid))"
 
+##@ Database
+
 db-start: ## Start PostgreSQL and wait until it is healthy
 	@$(COMPOSE) up -d --wait db
 
@@ -30,10 +37,10 @@ db-stop: ## Stop the local PostgreSQL service and preserve its data
 db-down: ## Remove the PostgreSQL container and network but preserve its data
 	@$(COMPOSE) down
 
-db-reset: ## DESTRUCTIVE: removes the container and pgdata volume and deletes all local database data
+db-reset: ## DESTRUCTIVE: delete all local database data
 	@$(COMPOSE) down -v
 
-migrate: ## Run alembic upgrade head on the development and test databases
+migrate: ## Apply pending migrations to the development and test databases
 	@echo "Migrating the development database..."
 	@uv run alembic upgrade head
 	@echo "Migrating the test database..."
@@ -55,24 +62,39 @@ db-crud-test: db-start ## Verify create, read, update, and delete in both local 
 	done; \
 	echo "PostgreSQL CRUD checks passed."
 
-install: ## Create the Python 3.12 environment and install locked dependencies (uv sync)
-	uv sync
+##@ Factory
 
-test: db-start ## Start PostgreSQL, then run the test suite with branch coverage
+##@@ PostgreSQL
+
+factory-test-postgresql: db-start ## [local dev] Start PostgreSQL and run the product test suite
 	uv run pytest
 
-check: ## Lint, check formatting and type-check (ruff, mypy)
-	uv run ruff check
-	uv run ruff format --check
-	uv run mypy
+##@@ Isolation test
 
-factory-test: ## Run tests in an isolated factory slot (requires LR_TEST_DATABASE_URL and FACTORY_TEST_SLOT)
+factory-test: ## [factory agents] Run the product test suite inside an isolated factory slot
 	@test -n "$$LR_TEST_DATABASE_URL" || { echo "LR_TEST_DATABASE_URL is required" >&2; exit 2; }
 	@test -n "$$FACTORY_TEST_SLOT" || { echo "FACTORY_TEST_SLOT is required" >&2; exit 2; }
 	PYTHONDONTWRITEBYTECODE=1 COVERAGE_FILE=".coverage.$$FACTORY_TEST_SLOT" uv run pytest -o cache_dir=".pytest_cache/$$FACTORY_TEST_SLOT"
 
-factory-check: ## Run checks with isolated factory caches (requires FACTORY_TEST_SLOT)
+factory-check: ## [factory agents] Run lint, format, and type checks inside an isolated factory slot
 	@test -n "$$FACTORY_TEST_SLOT" || { echo "FACTORY_TEST_SLOT is required" >&2; exit 2; }
 	RUFF_CACHE_DIR=".ruff_cache/$$FACTORY_TEST_SLOT" uv run ruff check
 	RUFF_CACHE_DIR=".ruff_cache/$$FACTORY_TEST_SLOT" uv run ruff format --check
 	MYPY_CACHE_DIR=".mypy_cache/$$FACTORY_TEST_SLOT" uv run mypy
+
+##@@ Python
+
+factory-install-python: ## [local dev] Set up the Python environment and install dependencies
+	uv sync
+
+factory-test-python: ## [factory bootstrap] Run the factory's own test suite
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'
+
+factory-lint-python: ## [factory bootstrap] Check the factory's shell scripts for syntax errors
+	sh -n factory/branch-guard.sh && sh -n factory/orchestrator-lock.sh && sh -n factory/slot.sh
+
+factory-format-check-python: ## [factory bootstrap] Check the factory's generated files are up to date
+	python3 factory/render-runtime-adapters.py --check
+
+factory-type-syntax-check-python: ## [factory bootstrap] Check the factory's Python scripts for syntax errors
+	python3 -c "import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('factory/render-runtime-adapters.py','tests/test_factory_orchestration.py')]"
