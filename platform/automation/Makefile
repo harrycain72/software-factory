@@ -3,7 +3,7 @@ PORT ?= 8000
 COMPOSE ?= docker compose
 POSTGRES_DATABASES := lunch_roulette lunch_roulette_test
 
-.PHONY: help dashboard-start db-start db-stop db-down db-reset db-crud-test migrate factory-install-python factory-test-postgresql factory-test factory-check factory-test-python factory-lint-python factory-format-check-python factory-type-syntax-check-python
+.PHONY: help dashboard-start db-start db-stop db-down db-reset db-crud-test migrate factory-install-python factory-test-postgresql factory-test factory-check factory-install-python-bootstrap factory-test-python factory-lint-python factory-format-check-python factory-type-syntax-check-python factory-full-check-python
 
 help: ## Show all targets
 	@awk 'BEGIN {FS = ":.*?## "; indent = "  "} \
@@ -87,6 +87,9 @@ factory-check: ## [factory agents] Run lint, format, and type checks inside an i
 factory-install-python: ## [local dev] Set up the Python environment and install dependencies
 	uv sync
 
+factory-install-python-bootstrap: ## [factory bootstrap] Placeholder for the factory's own install step (currently a no-op)
+	:
+
 factory-test-python: ## [factory bootstrap] Run the factory's own test suite
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'
 
@@ -98,3 +101,6 @@ factory-format-check-python: ## [factory bootstrap] Check the factory's generate
 
 factory-type-syntax-check-python: ## [factory bootstrap] Check the factory's Python scripts for syntax errors
 	python3 -c "import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('factory/render-runtime-adapters.py','tests/test_factory_orchestration.py')]"
+
+factory-full-check-python: ## [factory bootstrap] Run the factory's test, lint, and format checks together
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py' && sh -n factory/branch-guard.sh && sh -n factory/orchestrator-lock.sh && sh -n factory/slot.sh && python3 factory/render-runtime-adapters.py --check

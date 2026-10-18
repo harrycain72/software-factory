@@ -30,12 +30,12 @@ Supplementary, binding conventions for specific kinds of change, cited by file p
 
 Run commands from the repository root with the slot assignments printed by `sh factory/slot.sh create <slot>`.
 
-- Install: `:`
-- Test: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'`
-- Lint: `sh -n factory/branch-guard.sh && sh -n factory/orchestrator-lock.sh && sh -n factory/slot.sh`
-- Format check: `python3 factory/render-runtime-adapters.py --check`
-- Type/syntax check: `python3 -c "import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('factory/render-runtime-adapters.py','tests/test_factory_orchestration.py')]"`
-- Full factory check: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py' && sh -n factory/branch-guard.sh && sh -n factory/orchestrator-lock.sh && sh -n factory/slot.sh && python3 factory/render-runtime-adapters.py --check`
+- Install: `make factory-install-python-bootstrap`
+- Test: `make factory-test-python`
+- Lint: `make factory-lint-python`
+- Format check: `make factory-format-check-python`
+- Type/syntax check: `make factory-type-syntax-check-python`
+- Full factory check: `make factory-full-check-python`
 
 Do not admit parallel product work until real product install, test, lint, format, and type-check commands replace or extend this bootstrap profile and pass serially.
 
