@@ -2,7 +2,22 @@
 
 ## Product and design sources
 
-This repository currently contains only the parallel-factory bootstrap contract. No product requirements, design system, application source, or external design source has been configured.
+- Business requirements: `docs/solution/business-prd.md`.
+- Technical requirements: `docs/solution/technical-prd.md`.
+- Domain terminology: `docs/solution/GLOSSARY.md`.
+- Domain map: `docs/solution/domain-map.md`.
+- Feature and acceptance-criteria backlog: `docs/planning/epics-and-user-stories.md`. This is the source a human draws from when admitting a story with `/factory <feature>`; it does not populate `factory/backlog.md` automatically and is not read by the coordinator on its own.
+- No design system or external design source has been configured yet.
+
+## Architecture rules
+
+Supplementary, binding conventions for specific kinds of change, cited by file path rather than restated here. Apply every rule file whose scope matches the change under implementation; record an exception in the pull request when a rule cannot apply, together with the reason and client impact.
+
+- `docs/architecture/rules/api-endpoint-design.md` — all FastAPI HTTP endpoints: server-rendered pages, forms, downloads, health checks, and the JSON extraction API.
+- `docs/architecture/rules/test-driven-development.md` — every story with testable behavior; applies by default, with exceptions recorded in the pull request rather than the backlog.
+- `docs/architecture/rules/bce-architecture.md` — all product code: business-domain partitioning with Boundary–Control–Entity inside each domain, dependency direction, cross-domain contracts, and the default test seams. Its "Domain map" rule is applied through `docs/solution/domain-map.md`, which decides which domain owns each story's code.
+
+`spec-writer` must name the applicable rule files in `spec.md` for the story. `builder` must follow them when implementing. `reviewer-code`'s check of "compliance with repository conventions" includes every rule file listed here, and a finding that cites one must name the specific rule.
 
 ## Stack and layout
 
