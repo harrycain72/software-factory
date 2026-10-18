@@ -6,7 +6,7 @@
  * own "foundation" tokens (--fnd-*). Element and .cel-* component rules are a
  * reconstruction of how the site applies them.
  *
- * Use:   <link rel="stylesheet" href="design/celonis.css">
+ * Use:   <link rel="stylesheet" href="platform/design/celonis/celonis.css">
  * Theme: follows the OS; force with <html data-theme="light|dark">, or put a
  *        theme class (.light-base-theme, .dark-base-theme,
  *        .light-secondary-theme, .dark-secondary-theme, .dark-accent-theme)

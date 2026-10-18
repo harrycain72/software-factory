@@ -21,7 +21,7 @@ top bar regenerates the whole scheme.
 ## Apply it to any HTML file
 
 ```html
-<link rel="stylesheet" href="design/material_design_3/material3.css">
+<link rel="stylesheet" href="platform/design/material_design_3/material3.css">
 ```
 
 That alone restyles plain elements: body, headings, links, buttons, inputs,
@@ -38,7 +38,7 @@ any other element re-themes that subtree and paints its surface.
 after the stylesheet:
 
 ```html
-<script type="module" src="design/material_design_3/theme.js" data-seed="#0b57d0"></script>
+<script type="module" src="platform/design/material_design_3/theme.js" data-seed="#0b57d0"></script>
 ```
 
 This uses Google's `material-color-utilities` (the Theme Builder engine,

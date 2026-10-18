@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software Factory</title>
+<script>
+  try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
+<link rel="stylesheet" href="celonis.css">
+<style>
+  /* Board layout on top of celonis.css (symlinked from design/celonis/celonis.css).
+     Colour, type, spacing and radius come from its --fnd-* tokens; components from its .cel-* classes.
+     Light/dark follow the OS; the toggle sets <html data-theme>, which celonis.css honours. */
+  body { font-size: var(--fnd-typography-paragraph-m-font-size); line-height: var(--fnd-typography-paragraph-m-line-height); }
+  .mono { font-family: var(--ff-mono); }
+  .icon-button svg { fill: currentColor; }
+
+  /* top bar: .cel-nav (always black) */
+  .cel-nav h1 { margin: 0; letter-spacing: var(--fnd-typography-heading-xxs-letter-spacing); font-size: var(--fnd-typography-heading-xxs-font-size); line-height: var(--fnd-typography-heading-xxs-line-height); }
+  .cel-nav .meta { display: flex; align-items: center; gap: var(--fnd-spacing-03); color: #cbcbcb; font-size: var(--fnd-typography-paragraph-s-font-size); }
+  .cel-nav .cel-dot.off { background: var(--fnd-color-semantic-text-danger); }
+  .cel-nav .icon-button { margin-left: auto; background: #1d1d1d; color: #cbcbcb; }
+  .cel-nav .icon-button:hover { background: #4d4d4d; color: #fff; }
+  .cel-nav .icon-button:focus-visible { outline-color: #fff; }
+
+  /* board: one column per stage */
+  .board { display: grid; grid-template-columns: repeat(9, minmax(200px, 1fr)); gap: var(--fnd-spacing-04);
+           padding: var(--fnd-spacing-07) var(--cel-gutter) var(--fnd-spacing-08); overflow-x: auto; }
+  .col { min-width: 0; }
+  .col > .cel-overline { letter-spacing: 0; display: flex; justify-content: space-between; margin-bottom: var(--fnd-spacing-03); }
+  .lane { min-height: 160px; padding: var(--fnd-spacing-02); border-radius: var(--fnd-radius-m); background: var(--fnd-color-background-secondary);
+          display: flex; flex-direction: column; gap: var(--fnd-spacing-02); }
+  .col.human .lane { box-shadow: inset 0 2px 0 var(--fnd-color-background-accent-green); }
+
+  /* job card: .cel-card.outlined, denser for narrow lanes */
+  .job.cel-card { padding: var(--fnd-spacing-03) var(--fnd-spacing-04); cursor: pointer; }
+  .job .id { display: flex; justify-content: space-between; align-items: center; gap: var(--fnd-spacing-02);
+             font-size: var(--fnd-typography-paragraph-s-font-size); color: var(--fnd-color-text-mid); }
+  .job .id { flex-wrap: wrap; row-gap: var(--fnd-spacing-01); }
+  .job .id .mono { flex: 1 1 14ch; min-width: 0; overflow-wrap: break-word; }
+  .job .end { display: flex; align-items: center; gap: var(--fnd-spacing-01); margin-left: auto; }
+  .job .fold { width: 24px; height: 24px; padding: 0; display: grid; place-items: center; border: 0; border-radius: var(--fnd-radius-s);
+               background: none; color: var(--fnd-color-text-mid); cursor: pointer; }
+  .job .fold:hover { background: var(--fnd-color-background-secondary); color: var(--fnd-color-text-high); }
+  .job .fold svg { width: 16px; height: 16px; fill: currentColor; transition: transform var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused); }
+  .job.collapsed .fold svg { transform: rotate(-90deg); }
+  .job.collapsed > :not(.id) { display: none; }
+  .job .title { margin: var(--fnd-spacing-01) 0 var(--fnd-spacing-03); font-size: var(--fnd-typography-paragraph-l-font-size); line-height: var(--fnd-typography-paragraph-l-line-height); }
+  .job.needs-human { border-color: var(--fnd-color-border-high); box-shadow: inset 4px 0 0 var(--fnd-color-background-accent-green); }
+  .job .note { margin: var(--fnd-spacing-02) 0 0; font-size: var(--fnd-typography-paragraph-s-font-size); line-height: var(--fnd-typography-paragraph-s-line-height); }
+  .job.needs-human .note { color: var(--fnd-color-text-high); }
+  .job .cmd { display: block; margin-top: var(--fnd-spacing-02); overflow-wrap: break-word; font-size: var(--fnd-typography-paragraph-s-font-size); }
+  .nowrap { white-space: nowrap; }
+  .working { animation: animations-flash 1.2s var(--fnd-motion-ease-focused) infinite; }
+
+  /* review rounds: a row of compact .cel-label chips per round */
+  .round { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fnd-spacing-01); margin-top: var(--fnd-spacing-01); }
+  .round .r { width: 22px; font-size: var(--fnd-typography-paragraph-xs-font-size); color: var(--fnd-color-text-mid); }
+  .round.past { opacity: .5; }
+  .chip.cel-label { height: 20px; padding: 0 6px; font-size: var(--fnd-typography-paragraph-xs-font-size);
+                    transition: background-color var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused); }
+  .chip.pending { background: none; box-shadow: inset 0 0 0 1px var(--fnd-color-border-mid); color: var(--fnd-color-text-low); }
+
+  .empty { padding: var(--fnd-spacing-04) var(--fnd-spacing-02); text-align: center; color: var(--fnd-color-text-mid); font-size: var(--fnd-typography-paragraph-s-font-size); }
+
+  /* drawer */
+  .scrim { position: fixed; inset: 0; background: var(--fnd-color-background-transparency-low); opacity: 0; pointer-events: none;
+           transition: opacity var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused); }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  aside { position: fixed; top: 0; right: 0; height: 100%; width: min(760px, 100%); display: flex; flex-direction: column;
+          background: var(--fnd-color-background-base); border-left: 1px solid var(--fnd-color-border-mid);
+          transform: translateX(100%); transition: transform var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-expressive); }
+  aside.open { transform: none; }
+  aside .top { padding: var(--fnd-spacing-06) var(--fnd-spacing-07) var(--fnd-spacing-04); border-bottom: 1px solid var(--fnd-color-border-low); }
+  aside .top .row { display: flex; justify-content: space-between; align-items: start; gap: var(--fnd-spacing-03); }
+  aside h3 { margin: var(--fnd-spacing-01) 0 0; font-size: var(--fnd-typography-heading-xs-font-size);
+             line-height: var(--fnd-typography-heading-xs-line-height); letter-spacing: var(--fnd-typography-heading-xs-letter-spacing); }
+  .tabs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fnd-spacing-02); margin-top: var(--fnd-spacing-04); }
+  .tabs .grp { margin-left: var(--fnd-spacing-02); font-size: var(--fnd-typography-paragraph-xs-font-size); color: var(--fnd-color-text-mid); }
+  .tab.small { height: 32px; padding: 0 var(--fnd-spacing-03); font-size: var(--fnd-typography-paragraph-s-font-size); }
+  .tab::before { content: ""; width: 6px; height: 6px; border-radius: 1px; background: transparent; }
+  .tab.PASS::before, .tab.APPROVE::before { background: var(--fnd-color-semantic-text-success); }
+  .tab.CHANGES::before { background: var(--fnd-color-semantic-text-danger); }
+  .tab.ESCALATE::before { background: var(--fnd-color-background-accent-green); }
+  .tab.active, .tab.active:hover { background: var(--fnd-color-background-inverse); color: var(--fnd-color-text-inverse); border-color: var(--fnd-color-background-inverse); }
+
+  .doc { flex: 1; overflow: auto; padding: var(--fnd-spacing-02) var(--fnd-spacing-07) var(--fnd-spacing-08); }
+  .doc h1 { font-size: var(--fnd-typography-heading-s-font-size); line-height: var(--fnd-typography-heading-s-line-height);
+            letter-spacing: var(--fnd-typography-heading-s-letter-spacing); margin: var(--fnd-spacing-06) 0 var(--fnd-spacing-03); }
+  .doc h2 { font-size: var(--fnd-typography-heading-xxs-font-size); line-height: var(--fnd-typography-heading-xxs-line-height); margin: var(--fnd-spacing-06) 0 var(--fnd-spacing-02); }
+  .doc h3 { font-size: var(--fnd-typography-paragraph-l-font-size); line-height: var(--fnd-typography-paragraph-l-line-height); margin: var(--fnd-spacing-05) 0 var(--fnd-spacing-01); }
+  .doc table { width: auto; }
+  .doc a { text-decoration: underline; }
+  .verdict.cel-label { margin: var(--fnd-spacing-05) 0 var(--fnd-spacing-01); }
+
+  @media (max-width: 900px) {
+    .board { grid-template-columns: minmax(0, 1fr); }
+    .lane { min-height: 0; }
+    .col > .cel-overline [aria-hidden] { display: none; }
+    aside .top, .doc { padding-inline: var(--fnd-spacing-05); }
+  }
+</style>
+</head>
+<body>
+<header class="cel-nav">
+  <h1><span class="cel-dot"></span> Software Factory</h1>
+  <div class="meta"><span class="cel-dot" id="live"></span><span class="cel-nav-optional" id="status">connecting…</span><span id="count"></span></div>
+  <button class="icon-button" id="theme" type="button"></button>
+</header>
+<main class="board" id="board"></main>
+<div class="scrim" id="scrim"></div>
+<aside id="drawer" aria-hidden="true">
+  <div class="top">
+    <div class="row"><div><p class="cel-overline mono" id="d-id"></p><h3 id="d-title"></h3></div>
+      <button class="icon-button" id="d-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7a1 1 0 0 0-1.4 1.4l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg></button></div>
+    <div class="tabs" id="d-tabs"></div>
+  </div>
+  <div class="doc" id="d-doc"></div>
+</aside>
+
+<script>
+const STAGES = [
+  ["queued", "Queued"], ["spec", "Spec"], ["build", "Build"],
+  ["review", "Review"], ["integrating", "Integrating"],
+  ["approval", "Approval"], ["blocked", "Blocked"],
+  ["needs-human", "Needs human"], ["merged", "Merged"],
+];
+const ACTIVE = new Set(["spec", "build", "review", "integrating", "approval"]);
+const REVIEWERS = [["security", "SEC"], ["ux", "UX"], ["ui", "UI"], ["code", "CODE"]];
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+let board = { jobs: [] }, lastRaw = "", openJob = null, openFile = null;
+let collapsed = new Set();
+try { collapsed = new Set(JSON.parse(localStorage.getItem("collapsed") || "[]")); } catch {}
+const CHEVRON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.4 8.6a1 1 0 0 0-1.4 1.4l5.3 5.3a1 1 0 0 0 1.4 0L18 10a1 1 0 0 0-1.4-1.4L12 13.2 7.4 8.6z"/></svg>';
+
+/* ---------- board ---------- */
+async function poll() {
+  try {
+    const res = await fetch("board.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(res.status);
+    const raw = await res.text();
+    $("live").className = "cel-dot";
+    $("status").textContent = "live · " + new Date().toLocaleTimeString();
+    if (raw === lastRaw) return;
+    const first = !lastRaw;
+    lastRaw = raw; board = JSON.parse(raw);
+    render();
+    if (first && location.hash.length > 1) openDrawer(decodeURIComponent(location.hash.slice(1)));
+    else if (openJob) loadDrawer(openJob, true);
+  } catch (e) {
+    $("live").className = "cel-dot off";
+    $("status").textContent = location.protocol === "file:"
+      ? "open via python3 -m http.server" : "board.json unreachable";
+  }
+}
+
+function chips(reviews, label, past) {
+  return `<div class="round${past ? " past" : ""}"><span class="r">${label}</span>` +
+    REVIEWERS.map(([k, short]) => {
+      const v = (reviews || {})[k] || "pending";
+      const tone = { PASS: " success", CHANGES: " danger" }[v] ?? " pending";
+      return `<span class="chip cel-label dense${tone}" title="${k}: ${esc(v)}">${short}</span>`;
+    }).join("") + `</div>`;
+}
+
+function card(j) {
+  const human = j.stage === "needs-human";
+  const blocked = j.stage === "blocked";
+  const rounds = (j.history || []).map((r, i) => chips(r, "R" + (i + 1), true)).join("") +
+    (j.round > 0 ? chips(j.reviews, "R" + j.round, false) : "");
+  const tag = human ? `<span class="cel-label dense accent">needs you</span>`
+    : blocked ? `<span class="cel-label dense danger">blocked</span>`
+    : j.stage === "queued" ? `<span class="cel-label dense">queued</span>`
+    : j.stage === "merged" ? `<span class="cel-label dense success">merged</span>`
+    : ACTIVE.has(j.stage) ? `<span class="cel-dot working" title="agent working"></span>` : "";
+  const folded = collapsed.has(j.id);
+  return `<div class="job cel-card outlined${human ? " needs-human" : ""}${folded ? " collapsed" : ""}" tabindex="0" role="button" data-id="${esc(j.id)}">
+    <div class="id"><span class="mono">${esc(j.id)}</span><span class="end">${tag}<button type="button" class="fold"
+      aria-expanded="${!folded}" aria-label="${folded ? "Expand" : "Collapse"} ${esc(j.id)}" title="${folded ? "Expand" : "Collapse"}">${CHEVRON}</button></span></div>
+    <div class="title">${esc(j.title || j.id)}</div>
+    ${rounds}
+    ${j.note ? `<p class="note">${esc(j.note)}</p>` : ""}
+    ${human ? `<code class="cmd">/factory approve <span class="nowrap">${esc(j.id)}</span></code>` : ""}
+  </div>`;
+}
+
+function render() {
+  const jobs = board.jobs || [];
+  $("count").textContent = `${jobs.length} job${jobs.length === 1 ? "" : "s"}`;
+  $("board").innerHTML = STAGES.map(([key, label], i) => {
+    const here = jobs.filter((j) => j.stage === key);
+    const empty = !jobs.length && key === "queued"
+      ? `<div class="empty">No jobs yet.<br>Run <code>/factory next</code></div>` : "";
+    return `<section class="col${key === "needs-human" ? " human" : ""}">
+      <h2 class="cel-overline"><span>${label}${here.length ? " · " + here.length : ""}</span>${i < STAGES.length - 2 ? '<span aria-hidden="true">→</span>' : ""}</h2>
+      <div class="lane">${here.map(card).join("") || empty}</div></section>`;
+  }).join("");
+}
+
+function toggleFold(c) {
+  const id = c.dataset.id, folded = !collapsed.has(id);
+  folded ? collapsed.add(id) : collapsed.delete(id);
+  try { localStorage.setItem("collapsed", JSON.stringify([...collapsed])); } catch {}
+  c.classList.toggle("collapsed", folded);
+  const b = c.querySelector(".fold"), word = folded ? "Expand" : "Collapse";
+  b.setAttribute("aria-expanded", String(!folded)); b.setAttribute("aria-label", `${word} ${id}`); b.title = word;
+}
+$("board").addEventListener("click", (e) => {
+  const c = e.target.closest(".job"); if (!c) return;
+  if (e.target.closest(".fold")) toggleFold(c); else openDrawer(c.dataset.id);
+});
+$("board").addEventListener("keydown", (e) => {
+  if (e.target.closest(".fold")) return; // the button handles its own Enter/Space as a click
+  const c = e.target.closest(".job"); if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openDrawer(c.dataset.id); }
+});
+
+/* ---------- drawer ---------- */
+function filesFor(j) {
+  const base = `jobs/${j.id}/`;
+  const list = [{ path: base + "spec.md", label: "spec" }, { path: base + "build.md", label: "build" }];
+  for (let r = 1; r <= (j.round || 0); r++) {
+    REVIEWERS.forEach(([k]) => list.push({ path: `${base}round-${r}/review-${k}.md`, label: k, group: "R" + r }));
+    list.push({ path: `${base}round-${r}/human.md`, label: "human", group: "R" + r });
+  }
+  list.push({ path: base + "decision.md", label: "decision" });
+  return list;
+}
+
+async function fetchText(path) {
+  try { const r = await fetch(path, { cache: "no-store" }); return r.ok ? await r.text() : null; } catch { return null; }
+}
+
+function verdictOf(text) {
+  const first = (text || "").trim().split("\n")[0].trim();
+  const m = first.match(/^(?:VERDICT:\s*)?(PASS|CHANGES|APPROVE|ESCALATE)\b/);
+  return m ? m[1] : "";
+}
+
+async function loadDrawer(id, keepFile) {
+  const j = (board.jobs || []).find((x) => x.id === id); if (!j) return;
+  $("d-id").textContent = `${j.id} · ${j.branch || ""} · ${j.stage}`;
+  $("d-title").textContent = j.title || j.id;
+  const files = filesFor(j);
+  const texts = await Promise.all(files.map((f) => fetchText(f.path)));
+  const found = files.map((f, i) => ({ ...f, text: texts[i] })).filter((f) => f.text !== null);
+  if (openJob !== id) return; // closed or switched meanwhile
+  if (!keepFile || !found.some((f) => f.path === openFile)) openFile = found.length ? found[found.length - 1].path : null;
+  let lastGroup = null;
+  $("d-tabs").innerHTML = found.map((f) => {
+    const g = f.group && f.group !== lastGroup ? `<span class="grp">${f.group}</span>` : "";
+    lastGroup = f.group || null;
+    return `${g}<button type="button" class="tab small secondary ${verdictOf(f.text)}${f.path === openFile ? " active" : ""}" data-path="${esc(f.path)}">${esc(f.label)}</button>`;
+  }).join("") || `<span class="empty">No files yet — the spec-writer is on it.</span>`;
+  const cur = found.find((f) => f.path === openFile);
+  $("d-doc").innerHTML = cur ? markdown(cur.text) : "";
+  $("d-tabs").onclick = (e) => {
+    const t = e.target.closest(".tab"); if (!t) return;
+    openFile = t.dataset.path; loadDrawer(id, true);
+  };
+}
+
+function openDrawer(id) {
+  openJob = id; openFile = null;
+  history.replaceState(null, "", "#" + encodeURIComponent(id));
+  $("drawer").classList.add("open"); $("scrim").classList.add("open");
+  $("drawer").setAttribute("aria-hidden", "false");
+  loadDrawer(id, false);
+}
+function closeDrawer() {
+  openJob = null;
+  history.replaceState(null, "", location.pathname);
+  $("drawer").classList.remove("open"); $("scrim").classList.remove("open");
+  $("drawer").setAttribute("aria-hidden", "true");
+}
+$("d-close").onclick = closeDrawer; $("scrim").onclick = closeDrawer;
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
+/* ---------- tiny markdown renderer ---------- */
+function inline(s) {
+  return esc(s)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>")
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+
+function markdown(src) {
+  const lines = src.replace(/\r/g, "").split("\n");
+  let out = "", i = 0;
+  const v = verdictOf(src);
+  if (v) { const tone = { PASS: "success", APPROVE: "success", CHANGES: "danger", ESCALATE: "accent" }[v]; out += `<span class="verdict cel-label ${tone}">${v}</span>`; i = lines.findIndex((l) => l.trim()) + 1; }
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) {
+      const buf = []; i++;
+      while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
+      i++; out += `<pre><code>${esc(buf.join("\n"))}</code></pre>`; continue;
+    }
+    const h = l.match(/^(#{1,4})\s+(.*)/);
+    if (h) { const n = Math.min(h[1].length, 3); out += `<h${n}>${inline(h[2])}</h${n}>`; i++; continue; }
+    if (/^\s*\|.*\|\s*$/.test(l)) {
+      const rows = [];
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(lines[i++]);
+      const cells = (r) => r.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      const body = rows.filter((r) => !/^\s*\|[\s:|-]+\|\s*$/.test(r));
+      out += "<table>" + body.map((r, k) => "<tr>" + cells(r).map((c) => k === 0 ? `<th>${inline(c)}</th>` : `<td>${inline(c)}</td>`).join("") + "</tr>").join("") + "</table>";
+      continue;
+    }
+    if (/^\s*([-*]|\d+\.)\s+/.test(l)) {
+      const ordered = /^\s*\d+\./.test(l), tag = ordered ? "ol" : "ul", items = [];
+      while (i < lines.length && /^\s*([-*]|\d+\.)\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*([-*]|\d+\.)\s+/, "").replace(/^\[( |x)\]\s*/, (m, x) => x === "x" ? "☑ " : "☐ "));
+        i++;
+      }
+      out += `<${tag}>` + items.map((t) => `<li>${inline(t)}</li>`).join("") + `</${tag}>`; continue;
+    }
+    if (/^>\s?/.test(l)) {
+      const buf = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ""));
+      out += `<blockquote>${inline(buf.join(" "))}</blockquote>`; continue;
+    }
+    if (!l.trim()) { i++; continue; }
+    const buf = [];
+    while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|\s*([-*]|\d+\.)\s|>|\s*\|)/.test(lines[i])) buf.push(lines[i++]);
+    if (!buf.length) buf.push(lines[i++]);
+    out += `<p>${inline(buf.join(" "))}</p>`;
+  }
+  return out;
+}
+
+/* ---------- theme ---------- */
+const ICONS = {
+  dark: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.39 5.39 0 0 1 12.9 4.1c-.44-.06-.9-.1-1.36-.1z"/></svg>',
+  light: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM2 13h2a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm18 0h2a1 1 0 0 0 0-2h-2a1 1 0 0 0 0 2zM11 2v2a1 1 0 0 0 2 0V2a1 1 0 0 0-2 0zm0 18v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-2 0zM5.99 4.58a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06zM7.05 18.36a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06z"/></svg>',
+};
+const darkMq = matchMedia("(prefers-color-scheme: dark)");
+const currentTheme = () => document.documentElement.dataset.theme || (darkMq.matches ? "dark" : "light");
+function paintToggle() {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  $("theme").innerHTML = ICONS[next];
+  $("theme").setAttribute("aria-label", `Switch to ${next} theme`);
+  $("theme").title = `Switch to ${next} theme`;
+}
+$("theme").onclick = () => {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("theme", next); } catch {}
+  paintToggle();
+};
+darkMq.addEventListener("change", paintToggle);
+paintToggle();
+
+render();
+poll();
+setInterval(poll, 2000);
+</script>
+</body>
+</html>

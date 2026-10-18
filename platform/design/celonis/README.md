@@ -10,7 +10,7 @@ Open `preview.html` to see every token, theme and component.
 ## Apply it to any HTML file
 
 ```html
-<link rel="stylesheet" href="design/celonis/celonis.css">
+<link rel="stylesheet" href="platform/design/celonis/celonis.css">
 ```
 
 That alone restyles plain elements: body, headings, links, buttons, inputs,

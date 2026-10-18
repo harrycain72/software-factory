@@ -8,7 +8,7 @@
  * baseline scheme from seed #6750A4), retrieved 2026-10-17.
  * Element and .md-* component rules follow the M3 component specs.
  *
- * Use:   <link rel="stylesheet" href="design/material_design_3/material3.css">
+ * Use:   <link rel="stylesheet" href="platform/design/material_design_3/material3.css">
  * Theme: follows the OS; force with <html data-theme="light|dark">, or put
  *        data-theme on any element to re-theme that subtree. To use your own
  *        brand colour, add theme.js (see README) or override --md-sys-color-*.

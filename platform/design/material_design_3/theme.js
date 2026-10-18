@@ -7,7 +7,7 @@
  * Builder and dynamic colour), and writes them as --md-sys-color-* overrides.
  *
  * Use, after material3.css:
- *   <script type="module" src="design/material_design_3/theme.js" data-seed="#0b57d0"></script>
+ *   <script type="module" src="platform/design/material_design_3/theme.js" data-seed="#0b57d0"></script>
  * Optional attributes: data-variant="tonal-spot|vibrant|expressive|neutral|fidelity|content|monochrome"
  *                      data-contrast="0" (-1 … 1; 0.5 = medium, 1 = high)
  * Or from JS:  import { applyTheme } from "./theme.js"; applyTheme("#0b57d0");
