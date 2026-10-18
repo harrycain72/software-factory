@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material 3 Specimen</title>
+<link rel="stylesheet" href="material3.css">
+<style>
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+  .swatch { min-height: 72px; padding: 8px 12px; border-radius: var(--md-sys-shape-corner-small); display: flex; flex-direction: column; justify-content: space-between; font: 12px/1.3 ui-monospace, monospace; }
+  .swatch.line { border: 1px solid var(--md-sys-color-outline-variant); }
+  .tones { display: grid; grid-template-columns: 96px repeat(13, 1fr); gap: 2px; font: 10px/1 ui-monospace, monospace; align-items: center; }
+  .tones div { height: 28px; border-radius: 2px; }
+  .type-row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .type-row code { background: none; padding: 0; color: var(--md-sys-color-on-surface-variant); font-size: 12px; }
+  .shape-tile { width: 96px; height: 72px; display: grid; place-items: center; font: 12px ui-monospace, monospace; }
+  .elev-tile { width: 112px; height: 80px; display: grid; place-items: center; border-radius: var(--md-sys-shape-corner-medium); background: var(--md-sys-color-surface-container-low); font: 12px ui-monospace, monospace; }
+  .demo-phone { border: 1px solid var(--md-sys-color-outline-variant); border-radius: var(--md-sys-shape-corner-large); overflow: hidden; max-width: 420px; background: var(--md-sys-color-surface); }
+  @media (max-width: 599.98px) { .type-row { grid-template-columns: minmax(0, 1fr); gap: 0; } .tones { grid-template-columns: 64px repeat(13, 1fr); } }
+</style>
+</head>
+<body>
+<div class="md-layout">
+  <nav class="md-nav-rail" aria-label="Sections">
+    <button class="md-fab tertiary" type="button" id="fab" aria-label="Open dialog"><span class="md-icon">edit</span></button>
+    <a class="md-nav-item" href="#colour" aria-current="page"><span class="md-icon">palette</span>Colour</a>
+    <a class="md-nav-item" href="#type"><span class="md-icon">match_case</span>Type</a>
+    <a class="md-nav-item" href="#shape"><span class="md-icon">rounded_corner</span>Shape</a>
+    <a class="md-nav-item" href="#components"><span class="md-icon">widgets</span>Components</a>
+  </nav>
+
+  <main>
+    <header class="md-top-app-bar" id="appbar">
+      <h1 class="md-title">Material 3 specimen</h1>
+      <label class="md-tooltip" data-tooltip="Seed colour" style="display:inline-flex">
+        <span class="md-visually-hidden">Seed colour</span>
+        <input type="color" id="seed" value="#6750a4" style="width:40px;height:40px;padding:0;border:0;border-radius:50%;cursor:pointer;background:none">
+      </label>
+      <button class="md-icon-button" type="button" id="toggle" aria-label="Toggle light / dark"><span class="md-icon">dark_mode</span></button>
+    </header>
+
+    <div class="md-container">
+      <section class="md-section">
+        <p class="md-typescale-label-large md-on-surface-variant">material3.css · m3.material.io/styles</p>
+        <h1 class="md-typescale-display-medium" style="margin-top:8px">Expressive, adaptive, personal.</h1>
+        <p class="md-typescale-body-large md-on-surface-variant" style="max-width:60ch">Tonal colour roles generated from a seed, Roboto on a fifteen-step type scale, rounded shape scale, tonal surfaces with soft elevation, and state layers for every interaction. Pick a seed colour in the top bar to regenerate the whole scheme.</p>
+        <div class="md-row" style="margin-top:24px">
+          <button type="button">Filled</button>
+          <button class="tonal" type="button">Tonal</button>
+          <button class="elevated" type="button">Elevated</button>
+          <button class="outlined" type="button">Outlined</button>
+          <button class="text" type="button">Text</button>
+          <a class="md-button" href="#components"><span class="md-icon">arrow_downward</span>Link button</a>
+          <button type="button" disabled>Disabled</button>
+        </div>
+      </section>
+
+      <section class="md-section" id="colour">
+        <h2>Colour roles</h2>
+        <p class="md-on-surface-variant">Each role pairs with an "on" role for text and icons on top of it.</p>
+        <div class="swatches" id="roles"></div>
+        <h3>Surfaces</h3>
+        <div class="swatches" id="surfaces"></div>
+        <h3>Tonal palettes</h3>
+        <div class="tones" id="tones"></div>
+      </section>
+
+      <section class="md-section" id="type">
+        <h2>Type scale</h2>
+        <div id="typescale"></div>
+      </section>
+
+      <section class="md-section" id="shape">
+        <h2>Shape &amp; elevation</h2>
+        <div class="md-row" style="gap:16px">
+          <div class="shape-tile md-primary-container md-shape-none">none 0</div>
+          <div class="shape-tile md-primary-container md-shape-xs">xs 4</div>
+          <div class="shape-tile md-primary-container md-shape-s">s 8</div>
+          <div class="shape-tile md-primary-container md-shape-m">m 12</div>
+          <div class="shape-tile md-primary-container md-shape-l">l 16</div>
+          <div class="shape-tile md-primary-container md-shape-xl">xl 28</div>
+          <div class="shape-tile md-primary-container md-shape-full">full</div>
+        </div>
+        <div class="md-row" style="gap:24px;margin-top:32px">
+          <div class="elev-tile md-elevation-0">level 0</div>
+          <div class="elev-tile md-elevation-1">level 1</div>
+          <div class="elev-tile md-elevation-2">level 2</div>
+          <div class="elev-tile md-elevation-3">level 3</div>
+          <div class="elev-tile md-elevation-4">level 4</div>
+          <div class="elev-tile md-elevation-5">level 5</div>
+        </div>
+      </section>
+
+      <section class="md-section" id="components">
+        <h2>Components</h2>
+
+        <h3>FABs &amp; icon buttons</h3>
+        <div class="md-row" style="gap:16px">
+          <button class="md-fab small" type="button" aria-label="Add"><span class="md-icon">add</span></button>
+          <button class="md-fab" type="button" aria-label="Add"><span class="md-icon">add</span></button>
+          <button class="md-fab large" type="button" aria-label="Add"><span class="md-icon">add</span></button>
+          <button class="md-fab extended secondary" type="button"><span class="md-icon">edit</span>Compose</button>
+          <button class="md-fab surface" type="button" aria-label="Navigate"><span class="md-icon">navigation</span></button>
+          <span style="width:16px"></span>
+          <button class="md-icon-button" type="button" aria-label="Settings"><span class="md-icon">settings</span></button>
+          <button class="md-icon-button filled" type="button" aria-label="Favourite"><span class="md-icon filled">favorite</span></button>
+          <button class="md-icon-button tonal" type="button" aria-label="Share"><span class="md-icon">share</span></button>
+          <button class="md-icon-button outlined" type="button" aria-label="Bookmark"><span class="md-icon">bookmark</span></button>
+        </div>
+
+        <h3>Segmented button &amp; chips</h3>
+        <div class="md-segmented" role="group" aria-label="View">
+          <button type="button" aria-pressed="true">Day</button>
+          <button type="button" aria-pressed="false">Week</button>
+          <button type="button" aria-pressed="false">Month</button>
+        </div>
+        <div class="md-chips" style="margin-top:16px">
+          <button class="md-chip" type="button"><span class="md-icon">event</span>Assist</button>
+          <button class="md-chip selected" type="button" aria-pressed="true"><span class="md-icon">check</span>Filter on</button>
+          <button class="md-chip" type="button" aria-pressed="false">Filter off</button>
+          <button class="md-chip elevated" type="button">Suggestion</button>
+          <span class="md-chip">Input chip<button class="md-chip-remove" type="button" aria-label="Remove">close</button></span>
+        </div>
+
+        <h3>Cards</h3>
+        <div class="md-grid">
+          <article class="md-card">
+            <h4 class="md-typescale-title-large">Elevated</h4>
+            <p class="md-typescale-body-medium md-on-surface-variant">surface-container-low with a level 1 shadow.</p>
+            <div class="md-actions"><button class="text" type="button">Cancel</button><button type="button">Open</button></div>
+          </article>
+          <a class="md-card filled" href="#components">
+            <h4 class="md-typescale-title-large">Filled</h4>
+            <p class="md-typescale-body-medium md-on-surface-variant">surface-container-highest. This one is a link, so it has a state layer.</p>
+          </a>
+          <article class="md-card outlined">
+            <h4 class="md-typescale-title-large">Outlined <span class="md-badge">3</span></h4>
+            <p class="md-typescale-body-medium md-on-surface-variant">surface with an outline-variant border.</p>
+            <progress class="md-progress" value="64" max="100"></progress>
+            <p class="md-typescale-body-small md-on-surface-variant" style="margin-top:12px">Indeterminate</p>
+            <progress class="md-progress"></progress>
+          </article>
+        </div>
+
+        <h3>Text fields &amp; selection</h3>
+        <div class="md-grid">
+          <div>
+            <label class="md-field"><input placeholder=" " value="Ada Lovelace"><span>Outlined</span><small class="md-supporting">Supporting text</small></label>
+            <label class="md-field filled"><input placeholder=" "><span>Filled</span></label>
+            <label class="md-field error"><input placeholder=" " value="not-an-email" aria-invalid="true"><span>Email</span><small class="md-supporting">Enter a valid email address</small></label>
+          </div>
+          <div>
+            <label class="md-field"><select><option>Option one</option><option>Option two</option></select><span>Select</span></label>
+            <div class="md-row"><input type="checkbox" class="md-switch" role="switch" checked aria-label="Wi-Fi"><span>Wi-Fi</span></div>
+            <div class="md-row"><input type="checkbox" class="md-switch" role="switch" aria-label="Bluetooth"><span>Bluetooth</span></div>
+            <div class="md-row"><input type="checkbox" checked id="c1"><label for="c1" class="md-typescale-body-large" style="color:inherit">Checkbox</label><input type="radio" name="r" checked id="r1"><label for="r1" class="md-typescale-body-large" style="color:inherit">Radio</label></div>
+            <input type="range" style="width:100%" aria-label="Slider">
+          </div>
+        </div>
+
+        <h3>Navigation, lists &amp; tabs</h3>
+        <div class="md-grid">
+          <div class="demo-phone">
+            <header class="md-top-app-bar scrolled" style="position:static">
+              <button class="md-icon-button" type="button" aria-label="Menu"><span class="md-icon">menu</span></button>
+              <h2 class="md-title">Inbox</h2>
+              <button class="md-icon-button" type="button" aria-label="Search"><span class="md-icon">search</span></button>
+            </header>
+            <nav class="md-tabs"><a class="md-tab" href="#components" aria-selected="true">Primary</a><a class="md-tab" href="#components">Social</a><a class="md-tab" href="#components">Updates</a></nav>
+            <ul class="md-list">
+              <li><a class="md-list-item" href="#components"><span class="md-avatar">A</span><span><span class="md-headline">Ali Connors</span><span class="md-supporting">Brunch this weekend?</span></span><span class="md-trailing">10 min</span></a></li>
+              <li><hr class="md-divider inset"></li>
+              <li><a class="md-list-item" href="#components"><span class="md-avatar">S</span><span><span class="md-headline">Sandra Adams</span><span class="md-supporting">Recipe to try</span></span><span class="md-trailing">2 h</span></a></li>
+              <li><hr class="md-divider inset"></li>
+              <li><button class="md-list-item" type="button"><span class="md-icon">inbox</span><span class="md-headline">Button list item</span></button></li>
+            </ul>
+            <nav class="md-nav-bar" style="position:static" aria-label="Demo">
+              <a class="md-nav-item" href="#components" aria-current="page"><span class="md-icon">mail</span>Mail</a>
+              <a class="md-nav-item" href="#components"><span class="md-icon">chat</span>Chat</a>
+              <a class="md-nav-item" href="#components"><span class="md-icon">groups</span>Spaces</a>
+              <a class="md-nav-item" href="#components"><span class="md-icon">videocam</span>Meet</a>
+            </nav>
+          </div>
+          <div class="md-stack">
+            <div class="md-snackbar"><span>Message archived</span><button class="text" type="button">Undo</button></div>
+            <p><span class="md-tooltip" data-tooltip="Plain tooltip" tabindex="0" style="text-decoration:underline dotted">Hover or focus for a tooltip</span></p>
+            <blockquote>Blockquote, with <a href="#components">a link</a> and <code>inline code</code>.</blockquote>
+            <table>
+              <thead><tr><th>Token</th><th>Value</th></tr></thead>
+              <tbody><tr><td>corner-medium</td><td>12px</td></tr><tr><td>hover opacity</td><td>0.08</td></tr><tr><td>emphasized</td><td>cubic-bezier(.2,0,0,1)</td></tr></tbody>
+            </table>
+            <div class="md-row"><div class="md-primary-container md-shape-m" style="padding:16px;flex:1">primary-container</div><div class="md-tertiary-container md-shape-m" style="padding:16px;flex:1">tertiary-container</div><div class="md-error-container md-shape-m" style="padding:16px;flex:1">error-container</div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="md-nav-bar md-compact-only" aria-label="Sections">
+      <a class="md-nav-item" href="#colour" aria-current="page"><span class="md-icon">palette</span>Colour</a>
+      <a class="md-nav-item" href="#type"><span class="md-icon">match_case</span>Type</a>
+      <a class="md-nav-item" href="#shape"><span class="md-icon">rounded_corner</span>Shape</a>
+      <a class="md-nav-item" href="#components"><span class="md-icon">widgets</span>Parts</a>
+    </nav>
+  </main>
+</div>
+
+<dialog class="md-dialog" id="dialog">
+  <h2>Discard draft?</h2>
+  <p>Dialogs use surface-container-high, the extra-large corner and the emphasized-decelerate easing.</p>
+  <form method="dialog" class="md-actions"><button class="text" value="cancel">Cancel</button><button class="text" value="ok">Discard</button></form>
+</dialog>
+
+<script type="module">
+  import { applyTheme } from "./theme.js";
+  const $ = (s) => document.querySelector(s);
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  const pairs = [["primary","on-primary"],["primary-container","on-primary-container"],["secondary","on-secondary"],["secondary-container","on-secondary-container"],["tertiary","on-tertiary"],["tertiary-container","on-tertiary-container"],["error","on-error"],["error-container","on-error-container"],["inverse-surface","inverse-on-surface"],["primary-fixed","on-primary-fixed"]];
+  const surfaces = ["surface-dim","surface","surface-bright","surface-container-lowest","surface-container-low","surface-container","surface-container-high","surface-container-highest","outline","outline-variant"];
+  function paint() {
+    $("#roles").innerHTML = pairs.map(([bg, fg]) => `<div class="swatch" style="background:var(--md-sys-color-${bg});color:var(--md-sys-color-${fg})"><span>${bg}</span><span>${css("--md-sys-color-" + bg)}</span></div>`).join("");
+    $("#surfaces").innerHTML = surfaces.map((s) => `<div class="swatch line" style="background:var(--md-sys-color-${s});color:var(--md-sys-color-${s.startsWith("outline") ? "surface" : "on-surface"})"><span>${s}</span><span>${css("--md-sys-color-" + s)}</span></div>`).join("");
+  }
+  const tones = [0,10,20,30,40,50,60,70,80,90,95,99,100];
+  $("#tones").innerHTML = ["primary","secondary","tertiary","neutral","neutral-variant","error"].map((p) =>
+    `<span>${p}</span>` + tones.map((t) => `<div title="${p}${t}" style="background:var(--md-ref-palette-${p}${t})"></div>`).join("")).join("") +
+    "<span></span>" + tones.map((t) => `<span style="text-align:center">${t}</span>`).join("");
+  $("#typescale").innerHTML = ["display","headline","title","body","label"].flatMap((r) => ["large","medium","small"].map((s) => `${r}-${s}`)).map((t) =>
+    `<div class="type-row"><code>${t}<br>${css(`--md-sys-typescale-${t}-size`)} / ${css(`--md-sys-typescale-${t}-line-height`)}</code><div class="md-typescale-${t}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">The quick brown fox jumps</div></div>`).join("");
+  paint();
+
+  $("#toggle").addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "light" : "dark";
+    $("#toggle .md-icon").textContent = dark ? "dark_mode" : "light_mode";
+    paint();
+  });
+  $("#seed").addEventListener("input", async (e) => { await applyTheme(e.target.value); paint(); });
+  $("#fab").addEventListener("click", () => $("#dialog").showModal());
+  addEventListener("scroll", () => $("#appbar").classList.toggle("scrolled", scrollY > 0), { passive: true });
+  document.querySelectorAll(".md-segmented button, .md-chip[aria-pressed]").forEach((b) => b.addEventListener("click", () => {
+    if (b.closest(".md-segmented")) b.parentElement.querySelectorAll("button").forEach((o) => o.setAttribute("aria-pressed", o === b));
+    else { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); b.classList.toggle("selected", on); }
+  }));
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Celonis Design Specimen</title>
+<link rel="stylesheet" href="celonis.css">
+<style>
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--fnd-spacing-04); }
+  .swatch { border-radius: var(--fnd-radius-m); overflow: hidden; border: 1px solid var(--fnd-color-border-low); }
+  .swatch div { height: 64px; }
+  .swatch p { margin: 0; padding: var(--fnd-spacing-02) var(--fnd-spacing-03); font: 12px/1.4 var(--ff-mono); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--fnd-spacing-03); align-items: center; }
+  .themes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--fnd-spacing-04); }
+  .themes > div { padding: var(--fnd-spacing-06); border-radius: var(--fnd-radius-m); }
+  .themes h5 { margin-top: 0; }
+  .spacer { display: flex; align-items: center; gap: var(--fnd-spacing-04); font: 12px var(--ff-mono); }
+  .spacer span:last-child { background: var(--fnd-color-background-accent-green); height: 12px; border-radius: var(--fnd-radius-s); }
+</style>
+</head>
+<body>
+<nav class="cel-nav">
+  <strong style="font-weight:500">Design specimen</strong>
+  <a class="cel-nav-optional" href="#colour">Colour</a><a class="cel-nav-optional" href="#type">Type</a><a class="cel-nav-optional" href="#components">Components</a>
+  <span style="margin-left:auto"></span>
+  <button class="small secondary" id="toggle" type="button">Toggle theme</button>
+</nav>
+
+<header class="cel-container cel-section">
+  <p class="cel-overline">Celonis design language · celonis.css</p>
+  <h1 class="cel-heading-xxl">Make <span class="cel-highlight">everything</span> work.</h1>
+  <p class="cel-text-l cel-muted" style="max-width:52ch">Poppins Regular in one weight, tight negative tracking on large sizes, black and white surfaces, 2–8px radii, and a single neon-green accent for the action that matters.</p>
+  <div class="row" style="margin-top:var(--fnd-spacing-07)">
+    <a class="button conversion large" href="#components">Get started</a>
+    <a class="button large" href="#type">Primary</a>
+    <a class="button secondary large" href="#colour">Secondary</a>
+    <a class="conversion" href="#components">Text link with square</a>
+  </div>
+</header>
+
+<section class="cel-container cel-section" id="colour" style="padding-top:0">
+  <h2>Colour</h2>
+  <div class="swatches" id="swatches"></div>
+  <h4>Themes</h4>
+  <div class="themes">
+    <div class="light-base-theme" style="border:1px solid var(--fnd-color-border-low)"><h5>light-base</h5><p class="cel-muted">Default page surface.</p><button class="small">Action</button></div>
+    <div class="light-secondary-theme"><h5>light-secondary</h5><p class="cel-muted">Grey band for alternating sections.</p><button class="small">Action</button></div>
+    <div class="dark-base-theme"><h5>dark-base</h5><p class="cel-muted">Hero and nav.</p><button class="small">Action</button></div>
+    <div class="dark-secondary-theme"><h5>dark-secondary</h5><p class="cel-muted">Raised surface on dark.</p><button class="small">Action</button></div>
+    <div class="dark-accent-theme"><h5>dark-accent</h5><p class="cel-muted">Celonis blue feature band.</p><button class="small conversion">Action</button></div>
+  </div>
+</section>
+
+<section class="light-secondary-theme">
+  <div class="cel-container cel-section" id="type">
+    <h2>Typography</h2>
+    <p class="cel-display" style="margin:0">Aa 1.400+</p>
+    <h1>Heading 1 — Enterprise AI</h1>
+    <h2>Heading 2 — Process intelligence</h2>
+    <h3>Heading 3 — Industrialise it</h3>
+    <h4>Heading 4 — Supply chain</h4>
+    <h5>Heading 5 — Manufacturing</h5>
+    <h6>Heading 6 — Banking</h6>
+    <p>Body paragraph-xl. Celonis sets body copy in Poppins Regular with comfortable line height. Links are <a href="#">plain text, underlined on hover</a>. Inline <code>code</code> sits on the secondary surface.</p>
+    <p class="cel-text-m cel-muted">Paragraph-m, muted — captions and supporting text.</p>
+    <blockquote>Blockquote with the green rule.</blockquote>
+    <h4>Spacing</h4>
+    <div id="spacing"></div>
+  </div>
+</section>
+
+<section class="cel-container cel-section" id="components">
+  <h2>Components</h2>
+  <h4>Buttons</h4>
+  <div class="row">
+    <button class="small">Small</button><button>Default</button><button class="large">Large</button>
+    <button class="secondary">Secondary</button><button class="conversion">Conversion</button>
+    <button class="ghost">Ghost</button><button disabled>Disabled</button>
+    <button class="icon-button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+  </div>
+  <h4>Labels</h4>
+  <div class="cel-labels"><span class="cel-label">Webinar</span><span class="cel-label dense">Dense</span><span class="cel-label success">Pass</span><span class="cel-label danger">Changes</span><span class="cel-label accent">New</span><span class="cel-label"><span class="cel-dot"></span> Live</span></div>
+  <h4>Cards</h4>
+  <div class="cel-grid">
+    <a class="cel-card" href="#"><p class="cel-overline">Customer story</p><h5>Bringing supply chains to work</h5><p>Flat surface, no shadow. Hover deepens the background one step.</p></a>
+    <a class="cel-card outlined" href="#"><p class="cel-overline">Report</p><h5>Outlined card</h5><p>Base surface with a low border.</p></a>
+    <div class="cel-stat"><span class="value">1.400+</span><span class="caption">companies run on Celonis</span></div>
+  </div>
+  <h4>Form</h4>
+  <form class="cel-grid cols-2" onsubmit="return false">
+    <label>Work email<input type="email" placeholder="name@company.com"></label>
+    <label>Industry<select><option>Manufacturing</option><option>Banking</option></select></label>
+    <label style="grid-column:1/-1">Message<textarea rows="3"></textarea></label>
+    <label class="row"><input type="checkbox" checked> Keep me posted</label>
+    <div><button class="conversion" type="submit">Submit</button></div>
+  </form>
+  <h4>Table</h4>
+  <table><tr><th>Token</th><th>Light</th><th>Dark</th></tr>
+    <tr><td><code>--fnd-color-text-high</code></td><td>#000</td><td>#fff</td></tr>
+    <tr><td><code>--fnd-color-background-accent-green</code></td><td>#5cfe50</td><td>#5cfe50</td></tr></table>
+  <h4>Notices</h4>
+  <div class="cel-notice">Neutral notice.</div><br>
+  <div class="cel-notice success">Job merged into main.</div><br>
+  <div class="cel-notice danger">Review requested changes.</div>
+</section>
+
+<script>
+  const names = ["background-base","background-secondary","background-tertiary","background-inverse","text-high","text-mid","text-low","border-low","border-mid","background-accent-green","background-accent-secondary","semantic-text-success","semantic-text-danger"];
+  document.getElementById("swatches").innerHTML = names.map((n) =>
+    `<div class="swatch"><div style="background:var(--fnd-color-${n})"></div><p>${n}</p></div>`).join("") +
+    `<div class="swatch"><div style="background:#0029ff"></div><p>accent blue #0029ff</p></div>`;
+  document.getElementById("spacing").innerHTML = ["01","02","03","04","05","06","07","08","09","10","11","12"].map((s) =>
+    `<div class="spacer"><span style="width:7ch">--${s}</span><span style="width:var(--fnd-spacing-${s})"></span></div>`).join("");
+  const root = document.documentElement;
+  document.getElementById("toggle").onclick = () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+  };
+</script>
+</body>
+</html>
