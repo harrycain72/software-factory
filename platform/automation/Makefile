@@ -16,10 +16,10 @@ dashboard-start: ## Start the factory dashboard as a background service (PORT=80
 		while lsof -ti tcp:$(PORT) -sTCP:LISTEN >/dev/null 2>&1; do sleep 0.2; done; \
 	fi; \
 	mkdir -p .factory-tmp; \
-	nohup python3 -m http.server $(PORT) --directory factory >.factory-tmp/dashboard.log 2>&1 & \
+	nohup python3 -m http.server $(PORT) --bind 127.0.0.1 >.factory-tmp/dashboard.log 2>&1 & \
 	echo $$! >.factory-tmp/dashboard.pid; \
 	sleep 0.3; \
-	echo "Dashboard: http://localhost:$(PORT)/dashboard.html (pid $$(cat .factory-tmp/dashboard.pid))"
+	echo "Dashboard: http://localhost:$(PORT)/platform/factory/dashboard.html (pid $$(cat .factory-tmp/dashboard.pid))"
 
 db-start: ## Start PostgreSQL and wait until it is healthy
 	@$(COMPOSE) up -d --wait db
