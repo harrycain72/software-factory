@@ -1,0 +1,494 @@
+/*
+ * Celonis design language — drop-in stylesheet.
+ *
+ * Source: https://www.celonis.com/de (dist/styles/styles.css, fonts.css and
+ * the cards block), retrieved 2026-10-17. Token names and values are Celonis'
+ * own "foundation" tokens (--fnd-*). Element and .cel-* component rules are a
+ * reconstruction of how the site applies them.
+ *
+ * Use:   <link rel="stylesheet" href="design/celonis.css">
+ * Theme: follows the OS; force with <html data-theme="light|dark">, or put a
+ *        theme class (.light-base-theme, .dark-base-theme,
+ *        .light-secondary-theme, .dark-secondary-theme, .dark-accent-theme)
+ *        on any element to re-theme that subtree.
+ * All element rules use :where() (zero specificity), so a page's own CSS wins.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+/* Celonis ships a tuned Poppins build with these stylesets. Kept so the
+   alternates apply if that font (or a Poppins with these sets) is present. */
+@font-feature-values Poppins {
+  @styleset { square-punctuation: 1; double-storey-a: 2; alternate-numbers: 4; }
+}
+@font-face {
+  font-family: "Poppins Fallback"; font-style: normal; font-weight: 400; src: local(Arial);
+  ascent-override: 92.83%; descent-override: 30.94%; line-gap-override: 8.84%; size-adjust: 113.11%;
+}
+
+/* ───────────────────────── Tokens ───────────────────────── */
+
+:root {
+  /* type */
+  --ff-celonis-poppins: "Poppins", "Poppins Fallback", helvetica, arial, sans-serif;
+  --ff-celonis-heading-poppins: "Poppins", "Poppins Fallback", helvetica, arial, sans-serif;
+  --ff-celonis-poppins-font-variant-alternates: styleset(square-punctuation, double-storey-a, alternate-numbers);
+  --ff-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* motion */
+  --fnd-motion-ease-informative: linear;
+  --fnd-motion-ease-focused: ease-in-out;
+  --fnd-motion-ease-expressive: ease-out;
+  --fnd-motion-duration-100: .1s;  --fnd-motion-duration-150: .15s; --fnd-motion-duration-200: .2s;
+  --fnd-motion-duration-250: .25s; --fnd-motion-duration-300: .3s;  --fnd-motion-duration-350: .35s;
+  --fnd-motion-duration-450: .45s; --fnd-motion-duration-600: .6s;  --fnd-motion-duration-1000: 1s;
+  --fnd-motion-duration-1500: 1.5s;
+  --fnd-motion-duration-informative-quick: .2s; --fnd-motion-duration-informative-base: .3s; --fnd-motion-duration-informative-slow: .6s;
+  --fnd-motion-duration-focused-quick: .2s;     --fnd-motion-duration-focused-base: .3s;     --fnd-motion-duration-focused-slow: .45s;
+  --fnd-motion-duration-expressive-quick: .2s;  --fnd-motion-duration-expressive-base: .3s;  --fnd-motion-duration-expressive-slow: .45s;
+  --fnd-motion-delay-0: 0s;     --fnd-motion-delay-100: .1s; --fnd-motion-delay-150: .15s; --fnd-motion-delay-200: .2s;
+  --fnd-motion-delay-250: .25s; --fnd-motion-delay-300: .3s; --fnd-motion-delay-450: .45s; --fnd-motion-delay-600: .6s;
+  --fnd-motion-delay-1000: 1s;
+
+  /* spacing (4px base) */
+  --fnd-spacing-none: 0;
+  --fnd-spacing-01: 4px;  --fnd-spacing-02: 8px;  --fnd-spacing-03: 12px; --fnd-spacing-04: 16px;
+  --fnd-spacing-05: 20px; --fnd-spacing-06: 24px; --fnd-spacing-07: 32px; --fnd-spacing-08: 40px;
+  --fnd-spacing-09: 56px; --fnd-spacing-10: 64px; --fnd-spacing-11: 80px; --fnd-spacing-12: 112px;
+
+  /* radius — deliberately small */
+  --fnd-radius-none: 0; --fnd-radius-s: 2px; --fnd-radius-m: 4px; --fnd-radius-l: 8px;
+
+  /* image ratios */
+  --fnd-image-ratio-1-1: 1;    --fnd-image-ratio-4-3: 4/3; --fnd-image-ratio-3-4: 3/4; --fnd-image-ratio-3-2: 3/2;
+  --fnd-image-ratio-2-3: 2/3;  --fnd-image-ratio-16-9: 16/9; --fnd-image-ratio-9-16: 9/16;
+
+  /* layout */
+  --cel-content-max: 1472px;
+  --cel-gutter: var(--fnd-spacing-05);
+  --nav-height: 64px;
+
+  /* type scale — mobile first; overridden at breakpoints below */
+  --fnd-typography-paragraph-xs-font-size: .625rem;  --fnd-typography-paragraph-xs-line-height: .75rem;   --fnd-typography-paragraph-xs-letter-spacing: 0;
+  --fnd-typography-paragraph-s-font-size: .75rem;    --fnd-typography-paragraph-s-line-height: 1rem;      --fnd-typography-paragraph-s-letter-spacing: 0;
+  --fnd-typography-paragraph-m-font-size: .875rem;   --fnd-typography-paragraph-m-line-height: 1.125rem;  --fnd-typography-paragraph-m-letter-spacing: 0;
+  --fnd-typography-paragraph-l-font-size: 1rem;      --fnd-typography-paragraph-l-line-height: 1.375rem;  --fnd-typography-paragraph-l-letter-spacing: 0;
+  --fnd-typography-paragraph-xl-font-size: 1rem;     --fnd-typography-paragraph-xl-line-height: 1.375rem; --fnd-typography-paragraph-xl-letter-spacing: 0;
+  --fnd-typography-heading-xxs-font-size: 1.125rem;  --fnd-typography-heading-xxs-line-height: 1.5rem;    --fnd-typography-heading-xxs-letter-spacing: 0;
+  --fnd-typography-heading-xs-font-size: 1.25rem;    --fnd-typography-heading-xs-line-height: 1.75rem;    --fnd-typography-heading-xs-letter-spacing: -.2px;
+  --fnd-typography-heading-s-font-size: 1.5rem;      --fnd-typography-heading-s-line-height: 2rem;        --fnd-typography-heading-s-letter-spacing: -.5px;
+  --fnd-typography-heading-m-font-size: 2rem;        --fnd-typography-heading-m-line-height: 2.5rem;      --fnd-typography-heading-m-letter-spacing: -.5px;
+  --fnd-typography-heading-l-font-size: 2rem;        --fnd-typography-heading-l-line-height: 2.5rem;      --fnd-typography-heading-l-letter-spacing: -.5px;
+  --fnd-typography-heading-xl-font-size: 2.75rem;    --fnd-typography-heading-xl-line-height: 3rem;       --fnd-typography-heading-xl-letter-spacing: -1px;
+  --fnd-typography-heading-xxl-font-size: 2.75rem;   --fnd-typography-heading-xxl-line-height: 3rem;      --fnd-typography-heading-xxl-letter-spacing: -1px;
+  --fnd-typography-display-s-font-size: 3.75rem;     --fnd-typography-display-s-line-height: 4.5rem;      --fnd-typography-display-s-letter-spacing: -1.5px;
+
+  /* colours that never change with theme */
+  --fnd-color-always-dark: #000;
+  --fnd-color-always-light: #fff;
+}
+
+@media (width >= 768px) {
+  :root {
+    --cel-gutter: var(--fnd-spacing-07);
+    --fnd-typography-heading-xxl-font-size: 3.75rem; --fnd-typography-heading-xxl-line-height: 4.5rem; --fnd-typography-heading-xxl-letter-spacing: -1.5px;
+  }
+}
+@media (width >= 960px) {
+  :root {
+    --cel-gutter: var(--fnd-spacing-08);
+    --fnd-typography-heading-l-font-size: 2.75rem;   --fnd-typography-heading-l-line-height: 3rem;      --fnd-typography-heading-l-letter-spacing: -1px;
+    --fnd-typography-heading-xl-font-size: 3.75rem;  --fnd-typography-heading-xl-line-height: 4.5rem;   --fnd-typography-heading-xl-letter-spacing: -1.5px;
+    --fnd-typography-heading-xxl-font-size: 5rem;    --fnd-typography-heading-xxl-line-height: 5rem;    --fnd-typography-heading-xxl-letter-spacing: -3px;
+    --fnd-typography-display-s-font-size: 6.25rem;   --fnd-typography-display-s-line-height: 6.25rem;   --fnd-typography-display-s-letter-spacing: -2px;
+  }
+}
+@media (width >= 1200px) {
+  :root {
+    --cel-gutter: var(--fnd-spacing-09);
+    --nav-height: 88px;
+    --fnd-typography-paragraph-xl-font-size: 1.125rem; --fnd-typography-paragraph-xl-line-height: 1.5rem;  --fnd-typography-paragraph-xl-letter-spacing: 0;
+    --fnd-typography-heading-xxs-font-size: 1.25rem;   --fnd-typography-heading-xxs-line-height: 1.75rem;  --fnd-typography-heading-xxs-letter-spacing: -.2px;
+    --fnd-typography-heading-xs-font-size: 1.5rem;     --fnd-typography-heading-xs-line-height: 2rem;      --fnd-typography-heading-xs-letter-spacing: -.5px;
+    --fnd-typography-heading-s-font-size: 2rem;        --fnd-typography-heading-s-line-height: 2.5rem;     --fnd-typography-heading-s-letter-spacing: -.5px;
+    --fnd-typography-heading-m-font-size: 2.75rem;     --fnd-typography-heading-m-line-height: 3rem;       --fnd-typography-heading-m-letter-spacing: -1px;
+    --fnd-typography-heading-l-font-size: 3.75rem;     --fnd-typography-heading-l-line-height: 4.5rem;     --fnd-typography-heading-l-letter-spacing: -1.5px;
+    --fnd-typography-heading-xl-font-size: 5rem;       --fnd-typography-heading-xl-line-height: 5rem;      --fnd-typography-heading-xl-letter-spacing: -3px;
+    --fnd-typography-heading-xxl-font-size: 6.25rem;   --fnd-typography-heading-xxl-line-height: 6.25rem;  --fnd-typography-heading-xxl-letter-spacing: -2px;
+    --fnd-typography-display-s-font-size: 8rem;        --fnd-typography-display-s-line-height: 8rem;       --fnd-typography-display-s-letter-spacing: -4px;
+  }
+}
+@media (width >= 1600px) {
+  :root {
+    --cel-gutter: var(--fnd-spacing-10);
+    --fnd-typography-paragraph-s-font-size: .875rem;  --fnd-typography-paragraph-s-line-height: 1.125rem;
+    --fnd-typography-paragraph-m-font-size: 1rem;     --fnd-typography-paragraph-m-line-height: 1.375rem;
+    --fnd-typography-paragraph-l-font-size: 1.125rem; --fnd-typography-paragraph-l-line-height: 1.5rem;
+    --fnd-typography-paragraph-xl-font-size: 1.5rem;  --fnd-typography-paragraph-xl-line-height: 2rem;   --fnd-typography-paragraph-xl-letter-spacing: -.5px;
+    --fnd-typography-heading-xxs-font-size: 1.5rem;   --fnd-typography-heading-xxs-line-height: 2rem;    --fnd-typography-heading-xxs-letter-spacing: -.5px;
+  }
+}
+
+/* ───────────────────────── Colour themes ─────────────────────────
+   Five themes, exactly as Celonis defines them. Light base is the default. */
+
+:root, .light-base-theme, [data-theme="light"] {
+  color-scheme: light;
+  --fnd-color-text-difference: #fff; --fnd-color-text-inverse: #fff;
+  --fnd-color-text-high: #000; --fnd-color-text-mid: #666; --fnd-color-text-low: #8e8d8d;
+  --fnd-color-text-state-disabled: #8e8d8d;
+  --fnd-color-text-transparency-mid: #000000b3; --fnd-color-text-transparency-low: #0006;
+  --fnd-color-semantic-text-success: #0b9e23; --fnd-color-semantic-text-danger: #bf281b;
+  --fnd-color-background-inverse: #000; --fnd-color-background-base: #fff;
+  --fnd-color-background-state-disabled: #e5e5e5;
+  --fnd-color-background-secondary: #f5f5f5; --fnd-color-background-tertiary: #e5e5e5;
+  --fnd-color-background-quaternary: #cbcbcb; --fnd-color-background-quinary: #767676;
+  --fnd-color-background-accent-green: #5cfe50; --fnd-color-background-accent-secondary: #04cd24;
+  --fnd-color-background-transparency-mid: #000c; --fnd-color-background-transparency-low: #0003;
+  --fnd-color-semantic-background-success: #d5ffd1; --fnd-color-semantic-background-danger: #ffdfdc;
+  --fnd-color-border-inverse: #fff; --fnd-color-border-high: #000; --fnd-color-border-mid-dark: #767676;
+  --fnd-color-border-mid: #cbcbcb; --fnd-color-border-low: #e5e5e5; --fnd-color-border-state-disabled: #e5e5e5;
+  --fnd-color-semantic-border-success: #0b9e23; --fnd-color-semantic-border-danger: #bf281b;
+}
+
+/* dark base — shared by the class, the explicit attribute and the OS preference */
+.dark-base-theme, [data-theme="dark"] {
+  color-scheme: dark;
+  --fnd-color-text-difference: #fff; --fnd-color-text-inverse: #000;
+  --fnd-color-text-high: #fff; --fnd-color-text-mid: #cbcbcb; --fnd-color-text-low: #767676;
+  --fnd-color-text-state-disabled: #8e8d8d;
+  --fnd-color-text-transparency-mid: #ffffffb3; --fnd-color-text-transparency-low: #fff6;
+  --fnd-color-semantic-text-success: #0b9e23; --fnd-color-semantic-text-danger: #ef5b4e;
+  --fnd-color-background-inverse: #fff; --fnd-color-background-base: #000;
+  --fnd-color-background-state-disabled: #333;
+  --fnd-color-background-secondary: #1d1d1d; --fnd-color-background-tertiary: #4d4d4d;
+  --fnd-color-background-quaternary: #666; --fnd-color-background-quinary: #d9d9d9;
+  --fnd-color-background-accent-green: #5cfe50; --fnd-color-background-accent-secondary: #56ed4b;
+  --fnd-color-background-transparency-mid: #fff9; --fnd-color-background-transparency-low: #fff3;
+  --fnd-color-semantic-background-success: #d5ffd1; --fnd-color-semantic-background-danger: #ffdfdc;
+  --fnd-color-border-inverse: #000; --fnd-color-border-high: #fff; --fnd-color-border-mid-dark: #cbcbcb;
+  --fnd-color-border-mid: #767676; --fnd-color-border-low: #333; --fnd-color-border-state-disabled: #333;
+  --fnd-color-semantic-border-success: #0b9e23; --fnd-color-semantic-border-danger: #ef5b4e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --fnd-color-text-difference: #fff; --fnd-color-text-inverse: #000;
+    --fnd-color-text-high: #fff; --fnd-color-text-mid: #cbcbcb; --fnd-color-text-low: #767676;
+    --fnd-color-text-state-disabled: #8e8d8d;
+    --fnd-color-text-transparency-mid: #ffffffb3; --fnd-color-text-transparency-low: #fff6;
+    --fnd-color-semantic-text-success: #0b9e23; --fnd-color-semantic-text-danger: #ef5b4e;
+    --fnd-color-background-inverse: #fff; --fnd-color-background-base: #000;
+    --fnd-color-background-state-disabled: #333;
+    --fnd-color-background-secondary: #1d1d1d; --fnd-color-background-tertiary: #4d4d4d;
+    --fnd-color-background-quaternary: #666; --fnd-color-background-quinary: #d9d9d9;
+    --fnd-color-background-accent-green: #5cfe50; --fnd-color-background-accent-secondary: #56ed4b;
+    --fnd-color-background-transparency-mid: #fff9; --fnd-color-background-transparency-low: #fff3;
+    --fnd-color-semantic-background-success: #d5ffd1; --fnd-color-semantic-background-danger: #ffdfdc;
+    --fnd-color-border-inverse: #000; --fnd-color-border-high: #fff; --fnd-color-border-mid-dark: #cbcbcb;
+    --fnd-color-border-mid: #767676; --fnd-color-border-low: #333; --fnd-color-border-state-disabled: #333;
+    --fnd-color-semantic-border-success: #0b9e23; --fnd-color-semantic-border-danger: #ef5b4e;
+  }
+}
+
+.light-secondary-theme {
+  color-scheme: light;
+  --fnd-color-text-difference: #fff; --fnd-color-text-inverse: #fff;
+  --fnd-color-text-high: #000; --fnd-color-text-mid: #666; --fnd-color-text-low: #8e8d8d;
+  --fnd-color-text-state-disabled: #8e8d8d;
+  --fnd-color-text-transparency-mid: #000000b3; --fnd-color-text-transparency-low: #0006;
+  --fnd-color-semantic-text-success: #0b9e23; --fnd-color-semantic-text-danger: #bf281b;
+  --fnd-color-background-inverse: #000; --fnd-color-background-base: #f5f5f5;
+  --fnd-color-background-state-disabled: #e5e5e5;
+  --fnd-color-background-secondary: #fff; --fnd-color-background-tertiary: #d9d9d9;
+  --fnd-color-background-quaternary: #cbcbcb; --fnd-color-background-quinary: #8e8d8d;
+  --fnd-color-background-accent-green: #5cfe50; --fnd-color-background-accent-secondary: #04cd24;
+  --fnd-color-background-transparency-mid: #000c; --fnd-color-background-transparency-low: #0003;
+  --fnd-color-semantic-background-success: #d5ffd1; --fnd-color-semantic-background-danger: #ffdfdc;
+  --fnd-color-border-inverse: #fff; --fnd-color-border-high: #000; --fnd-color-border-mid-dark: #8e8d8d;
+  --fnd-color-border-mid: #cbcbcb; --fnd-color-border-low: #d9d9d9; --fnd-color-border-state-disabled: #e5e5e5;
+  --fnd-color-semantic-border-success: #0b9e23; --fnd-color-semantic-border-danger: #bf281b;
+}
+
+.dark-secondary-theme {
+  color-scheme: dark;
+  --fnd-color-text-difference: #fff; --fnd-color-text-inverse: #000;
+  --fnd-color-text-high: #fff; --fnd-color-text-mid: #cbcbcb; --fnd-color-text-low: #767676;
+  --fnd-color-text-state-disabled: #8e8d8d;
+  --fnd-color-text-transparency-mid: #000000b3; --fnd-color-text-transparency-low: #0006;
+  --fnd-color-semantic-text-success: #0b9e23; --fnd-color-semantic-text-danger: #ef5b4e;
+  --fnd-color-background-inverse: #fff; --fnd-color-background-base: #1d1d1d;
+  --fnd-color-background-state-disabled: #333;
+  --fnd-color-background-secondary: #333; --fnd-color-background-tertiary: #4d4d4d;
+  --fnd-color-background-quaternary: #666; --fnd-color-background-quinary: #d9d9d9;
+  --fnd-color-background-accent-green: #5cfe50; --fnd-color-background-accent-secondary: #04cd24;
+  --fnd-color-background-transparency-mid: #fff9; --fnd-color-background-transparency-low: #fff3;
+  --fnd-color-semantic-background-success: #d5ffd1; --fnd-color-semantic-background-danger: #ffdfdc;
+  --fnd-color-border-inverse: #000; --fnd-color-border-high: #fff; --fnd-color-border-mid-dark: #cbcbcb;
+  --fnd-color-border-mid: #767676; --fnd-color-border-low: #333; --fnd-color-border-state-disabled: #333;
+  --fnd-color-semantic-border-success: #0b9e23; --fnd-color-semantic-border-danger: #ef5b4e;
+}
+
+/* Celonis blue */
+.dark-accent-theme {
+  color-scheme: dark;
+  --fnd-color-text-difference: #fff; --fnd-color-text-inverse: #000;
+  --fnd-color-text-high: #fff; --fnd-color-text-mid: #c6cfff; --fnd-color-text-low: #8ea0ff;
+  --fnd-color-text-state-disabled: #001894;
+  --fnd-color-text-transparency-mid: #000000b3; --fnd-color-text-transparency-low: #0006;
+  --fnd-color-semantic-text-success: #0b9e23; --fnd-color-semantic-text-danger: #ffb5af;
+  --fnd-color-background-inverse: #fff; --fnd-color-background-base: #0029ff;
+  --fnd-color-background-state-disabled: #0022ca;
+  --fnd-color-background-secondary: #0022ca; --fnd-color-background-tertiary: #2c4eff;
+  --fnd-color-background-quaternary: #8ea0ff; --fnd-color-background-quinary: #c6cfff;
+  --fnd-color-background-accent-green: #5cfe50; --fnd-color-background-accent-secondary: #04cd24;
+  --fnd-color-background-transparency-mid: #fff9; --fnd-color-background-transparency-low: #fff3;
+  --fnd-color-semantic-background-success: #d5ffd1; --fnd-color-semantic-background-danger: #ffb5af;
+  --fnd-color-border-inverse: #000; --fnd-color-border-high: #fff; --fnd-color-border-mid-dark: #ebedff;
+  --fnd-color-border-mid: #c6cfff; --fnd-color-border-low: #8ea0ff; --fnd-color-border-state-disabled: #8ea0ff;
+  --fnd-color-semantic-border-success: #0b9e23; --fnd-color-semantic-border-danger: #ffb5af;
+}
+
+/* A themed subtree paints its own surface and text. */
+:where(.light-base-theme, .dark-base-theme, .light-secondary-theme, .dark-secondary-theme, .dark-accent-theme) {
+  background-color: var(--fnd-color-background-base);
+  color: var(--fnd-color-text-high);
+}
+
+/* ───────────────────────── Base elements ───────────────────────── */
+
+:where(html) { -webkit-text-size-adjust: 100%; }
+:where(*, ::before, ::after) { box-sizing: border-box; }
+@media (prefers-reduced-motion: no-preference) { :where(html) { scroll-behavior: smooth; } }
+
+:where(body) {
+  margin: 0;
+  background-color: var(--fnd-color-background-base);
+  color: var(--fnd-color-text-high);
+  font-family: var(--ff-celonis-poppins);
+  font-variant-alternates: var(--ff-celonis-poppins-font-variant-alternates);
+  font-size: var(--fnd-typography-paragraph-xl-font-size);
+  line-height: var(--fnd-typography-paragraph-xl-line-height);
+  letter-spacing: var(--fnd-typography-paragraph-xl-letter-spacing);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One weight everywhere: Celonis headlines are Poppins Regular, tight-tracked. */
+:where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--ff-celonis-heading-poppins);
+  font-weight: 400; line-height: 1.25;
+  margin-top: .8em; margin-bottom: .25em;
+  text-wrap: balance;
+}
+:where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: 400; }
+:where(h1) { font-size: var(--fnd-typography-heading-xl-font-size); line-height: var(--fnd-typography-heading-xl-line-height); letter-spacing: var(--fnd-typography-heading-xl-letter-spacing); }
+:where(h2) { font-size: var(--fnd-typography-heading-l-font-size);  line-height: var(--fnd-typography-heading-l-line-height);  letter-spacing: var(--fnd-typography-heading-l-letter-spacing); }
+:where(h3) { font-size: var(--fnd-typography-heading-m-font-size);  line-height: var(--fnd-typography-heading-m-line-height);  letter-spacing: var(--fnd-typography-heading-m-letter-spacing); }
+:where(h4) { font-size: var(--fnd-typography-heading-s-font-size);  line-height: var(--fnd-typography-heading-s-line-height);  letter-spacing: var(--fnd-typography-heading-s-letter-spacing); }
+:where(h5) { font-size: var(--fnd-typography-heading-xs-font-size); line-height: var(--fnd-typography-heading-xs-line-height); letter-spacing: var(--fnd-typography-heading-xs-letter-spacing); }
+:where(h6) { font-size: var(--fnd-typography-heading-xxs-font-size); line-height: var(--fnd-typography-heading-xxs-line-height); letter-spacing: var(--fnd-typography-heading-xxs-letter-spacing); }
+
+:where(p, dl, ol, ul, pre, blockquote, table, figure) { margin-top: .8em; margin-bottom: .25em; }
+:where(strong, b) { font-weight: 500; }
+:where(small) { font-size: var(--fnd-typography-paragraph-s-font-size); line-height: var(--fnd-typography-paragraph-s-line-height); }
+
+:where(a:any-link) { color: var(--fnd-color-text-high); text-decoration: none; overflow-wrap: anywhere; }
+:where(a:any-link:hover) { text-decoration: underline; }
+:where(:focus-visible) { outline: 2px solid var(--fnd-color-border-high); outline-offset: 2px; }
+
+:where(img, video, svg, canvas) { max-width: 100%; height: auto; }
+:where(hr) { border: 0; border-top: 1px solid var(--fnd-color-border-low); margin: var(--fnd-spacing-07) 0; }
+
+:where(blockquote) {
+  margin-inline: 0; padding-left: var(--fnd-spacing-05);
+  border-left: 2px solid var(--fnd-color-background-accent-green);
+  color: var(--fnd-color-text-mid);
+}
+
+:where(code, kbd, samp, pre) { font-family: var(--ff-mono); }
+:where(code, pre) {
+  font-size: var(--fnd-typography-paragraph-m-font-size);
+  line-height: var(--fnd-typography-paragraph-l-line-height);
+}
+:where(:not(pre) > code) {
+  background: var(--fnd-color-background-secondary);
+  border-radius: var(--fnd-radius-s); padding: .1em .35em;
+}
+:where(pre) {
+  background-color: var(--fnd-color-background-secondary);
+  border-radius: var(--fnd-radius-l);
+  padding: var(--fnd-spacing-04); overflow-x: auto; white-space: pre;
+}
+
+:where(table) { border-collapse: collapse; width: 100%; font-size: var(--fnd-typography-paragraph-m-font-size); line-height: var(--fnd-typography-paragraph-m-line-height); }
+:where(th, td) { text-align: left; padding: var(--fnd-spacing-03) var(--fnd-spacing-04); border-bottom: 1px solid var(--fnd-color-border-low); }
+:where(th) { font-weight: 400; color: var(--fnd-color-text-mid); border-bottom-color: var(--fnd-color-border-mid); }
+
+/* form fields */
+:where(input, textarea, select) { font: inherit; letter-spacing: inherit; }
+:where(input:not([type=checkbox], [type=radio], [type=range], [type=color], [type=submit], [type=button], [type=reset]), textarea, select) {
+  min-height: 48px; width: 100%;
+  padding: var(--fnd-spacing-03) var(--fnd-spacing-04);
+  background: var(--fnd-color-background-base); color: var(--fnd-color-text-high);
+  border: 1px solid var(--fnd-color-border-mid); border-radius: var(--fnd-radius-s);
+  font-size: var(--fnd-typography-paragraph-l-font-size);
+  transition: border-color var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused);
+}
+:where(input, textarea, select):hover { border-color: var(--fnd-color-border-mid-dark); }
+:where(input, textarea, select):focus-visible { outline: none; border-color: var(--fnd-color-border-high); }
+:where(input::placeholder, textarea::placeholder) { color: var(--fnd-color-text-low); }
+:where(label) { font-size: var(--fnd-typography-paragraph-m-font-size); color: var(--fnd-color-text-mid); }
+:where(input[type=checkbox], input[type=radio]) { accent-color: var(--fnd-color-background-inverse); width: 16px; height: 16px; }
+
+/* ───────────────────────── Buttons ─────────────────────────
+   Primary: solid inverse (black on light, white on dark), 48px tall, 2px radius.
+   .secondary: outlined. .conversion: the neon-green call to action — use once
+   per view. Applies to <button> and to <a class="button">. */
+
+:where(button, .button, input[type=submit], input[type=button], input[type=reset]) {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--fnd-spacing-02);
+  height: 48px; padding: 0 var(--fnd-spacing-07);
+  border: 0; border-radius: var(--fnd-radius-s);
+  background-color: var(--fnd-color-background-inverse); color: var(--fnd-color-text-inverse);
+  font-family: var(--ff-celonis-poppins); font-variant-alternates: var(--ff-celonis-poppins-font-variant-alternates);
+  font-size: .875rem; line-height: 1.125rem; font-weight: 400; letter-spacing: 0;
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, .button, input[type=submit], input[type=button], input[type=reset]) {
+    transition: background-color var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused),
+                box-shadow var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused);
+  }
+}
+:where(button, .button, input[type=submit], input[type=button], input[type=reset]):hover {
+  background-color: var(--fnd-color-background-transparency-mid); text-decoration: none;
+}
+:where(button, .button).small  { height: 40px; padding: 0 var(--fnd-spacing-04); }
+:where(button, .button).large  { height: 56px; padding: 0 var(--fnd-spacing-08); }
+:where(button, .button).xlarge { height: 72px; padding: 0 var(--fnd-spacing-09); font-size: 1.125rem; line-height: 1.5rem; }
+
+:where(button, .button).secondary {
+  background-color: var(--fnd-color-background-base); color: var(--fnd-color-text-high);
+  border: 1px solid var(--fnd-color-border-mid);
+}
+:where(button, .button).secondary:hover { background-color: var(--fnd-color-background-secondary); }
+
+:where(button, .button).conversion {
+  background-color: var(--fnd-color-background-accent-green); color: var(--fnd-color-always-dark);
+}
+:where(button, .button).conversion:hover { background-color: var(--fnd-color-background-accent-green); box-shadow: inset 0 0 0 1000px #0003; }
+
+:where(button, .button).ghost { background: none; color: var(--fnd-color-text-high); padding-inline: var(--fnd-spacing-03); }
+:where(button, .button).ghost:hover { background-color: var(--fnd-color-background-secondary); }
+
+:where(button, .button).icon-button {
+  width: 40px; height: 40px; padding: 10px; border-radius: var(--fnd-radius-m);
+  background: var(--fnd-color-background-secondary); color: var(--fnd-color-text-mid);
+}
+:where(button, .button).icon-button:hover { background-color: var(--fnd-color-background-tertiary); color: var(--fnd-color-text-high); }
+:where(button, .button).icon-button :where(svg) { width: 20px; height: 20px; }
+
+:where(button, .button):is(:disabled, .disabled) {
+  background-color: var(--fnd-color-background-state-disabled); color: var(--fnd-color-text-state-disabled);
+  border: 0; box-shadow: none; cursor: not-allowed;
+}
+
+/* Text link with the signature green square bullet */
+:where(a.conversion:not(.button)) {
+  color: var(--fnd-color-text-high); text-decoration: none;
+  font-size: var(--fnd-typography-paragraph-xl-font-size); line-height: var(--fnd-typography-paragraph-xl-line-height);
+}
+:where(a.conversion:not(.button))::before {
+  content: ""; display: inline-block; width: .625em; height: .625em;
+  margin-right: var(--fnd-spacing-02); border-radius: var(--fnd-radius-s);
+  background-color: var(--fnd-color-background-accent-green);
+  transition: background-color var(--fnd-motion-duration-focused-base) var(--fnd-motion-ease-focused);
+}
+:where(a.conversion:not(.button)):hover::before { background-color: var(--fnd-color-background-inverse); }
+
+/* ───────────────────────── Components (.cel-*) ───────────────────────── */
+
+/* Page width container with Celonis' responsive gutters */
+.cel-container { width: 100%; max-width: calc(var(--cel-content-max) + 2 * var(--cel-gutter)); margin-inline: auto; padding-inline: var(--cel-gutter); }
+.cel-section { padding-block: var(--fnd-spacing-10); }
+@media (width >= 768px) { .cel-section { padding-block: var(--fnd-spacing-12); } }
+
+/* Type helpers for sizes headings don't cover */
+.cel-display  { font-size: var(--fnd-typography-display-s-font-size); line-height: var(--fnd-typography-display-s-line-height); letter-spacing: var(--fnd-typography-display-s-letter-spacing); font-weight: 400; }
+.cel-heading-xxl { font-size: var(--fnd-typography-heading-xxl-font-size); line-height: var(--fnd-typography-heading-xxl-line-height); letter-spacing: var(--fnd-typography-heading-xxl-letter-spacing); font-weight: 400; }
+.cel-text-l  { font-size: var(--fnd-typography-paragraph-l-font-size); line-height: var(--fnd-typography-paragraph-l-line-height); }
+.cel-text-m  { font-size: var(--fnd-typography-paragraph-m-font-size); line-height: var(--fnd-typography-paragraph-m-line-height); }
+.cel-text-s  { font-size: var(--fnd-typography-paragraph-s-font-size); line-height: var(--fnd-typography-paragraph-s-line-height); }
+.cel-muted   { color: var(--fnd-color-text-mid); }
+.cel-overline { font-size: var(--fnd-typography-paragraph-s-font-size); line-height: var(--fnd-typography-paragraph-s-line-height); color: var(--fnd-color-text-mid); margin: 0; }
+/* Highlight a word in a headline with the accent green underline-block */
+.cel-highlight { background: linear-gradient(transparent 62%, var(--fnd-color-background-accent-green) 62%, var(--fnd-color-background-accent-green) 92%, transparent 92%); color: inherit; }
+
+/* Label / tag chip */
+.cel-label {
+  display: inline-flex; align-items: center; gap: var(--fnd-spacing-01);
+  height: 32px; padding: 0 var(--fnd-spacing-02);
+  border-radius: var(--fnd-radius-s);
+  background-color: var(--fnd-color-background-secondary); color: var(--fnd-color-text-mid);
+  font-size: var(--fnd-typography-paragraph-s-font-size); line-height: 1;
+}
+.cel-label.dense { height: 24px; }
+.cel-label.success { background: var(--fnd-color-semantic-background-success); color: #0b6b1a; }
+.cel-label.danger  { background: var(--fnd-color-semantic-background-danger);  color: #9a1f14; }
+.cel-label.accent  { background: var(--fnd-color-background-accent-green); color: var(--fnd-color-always-dark); }
+.cel-labels { display: flex; flex-wrap: wrap; gap: var(--fnd-spacing-02); }
+
+/* Square status dot (Celonis uses squares, not circles) */
+.cel-dot { display: inline-block; width: .625em; height: .625em; border-radius: var(--fnd-radius-s); background: var(--fnd-color-background-accent-green); }
+
+/* Card: flat surface, no shadow, hover deepens the background one step */
+.cel-card {
+  display: block; position: relative;
+  background-color: var(--fnd-color-background-secondary); color: var(--fnd-color-text-high);
+  border-radius: var(--fnd-radius-m); padding: var(--fnd-spacing-05);
+  transition: background-color var(--fnd-motion-duration-200) ease;
+}
+@media (width >= 1200px) { .cel-card { padding: var(--fnd-spacing-06); } }
+.cel-card:is(a, [tabindex], .interactive):hover { background-color: var(--fnd-color-background-tertiary); text-decoration: none; }
+.cel-card > :first-child { margin-top: 0; }
+.cel-card :where(p) { color: var(--fnd-color-text-mid); }
+.cel-card :where(picture, img.cel-media) { display: block; border-radius: var(--fnd-radius-m); aspect-ratio: var(--fnd-image-ratio-3-2); object-fit: cover; overflow: hidden; width: 100%; }
+.cel-card.outlined { background: var(--fnd-color-background-base); border: 1px solid var(--fnd-color-border-low); }
+.cel-card.outlined:is(a, [tabindex], .interactive):hover { background: var(--fnd-color-background-secondary); }
+
+/* Big-number stat, as in the "square value" tiles */
+.cel-stat { display: flex; flex-direction: column; justify-content: space-between; gap: var(--fnd-spacing-04); aspect-ratio: 1; padding: var(--fnd-spacing-05); border-radius: var(--fnd-radius-m); background: var(--fnd-color-background-secondary); }
+.cel-stat .value { font-size: var(--fnd-typography-heading-l-font-size); line-height: var(--fnd-typography-heading-l-line-height); letter-spacing: var(--fnd-typography-heading-l-letter-spacing); }
+.cel-stat .caption { font-size: var(--fnd-typography-paragraph-m-font-size); line-height: var(--fnd-typography-paragraph-m-line-height); color: var(--fnd-color-text-mid); }
+
+/* Grid of cards: 1 → 3 columns */
+.cel-grid { display: grid; gap: var(--fnd-spacing-06); grid-template-columns: minmax(0, 1fr); }
+@media (width >= 768px) { .cel-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--fnd-spacing-07); } }
+.cel-grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.cel-grid.cols-4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+
+/* Top bar: always black, as on celonis.com */
+.cel-nav {
+  display: flex; align-items: center; gap: var(--fnd-spacing-06);
+  height: var(--nav-height); padding-inline: var(--cel-gutter);
+  background: var(--fnd-color-always-dark); color: var(--fnd-color-always-light);
+  overflow-x: auto; scrollbar-width: none;
+}
+.cel-nav > * { flex-shrink: 0; white-space: nowrap; }
+@media (width < 768px) { .cel-nav { gap: var(--fnd-spacing-04); } .cel-nav .cel-nav-optional { display: none; } }
+.cel-nav :where(a:any-link) { color: inherit; font-size: var(--fnd-typography-paragraph-m-font-size); }
+
+/* Notice / inline message */
+.cel-notice { padding: var(--fnd-spacing-04) var(--fnd-spacing-05); border-radius: var(--fnd-radius-m); background: var(--fnd-color-background-secondary); border-left: 4px solid var(--fnd-color-border-high); }
+.cel-notice.success { background: var(--fnd-color-semantic-background-success); border-color: var(--fnd-color-semantic-border-success); color: #000; }
+.cel-notice.danger  { background: var(--fnd-color-semantic-background-danger);  border-color: var(--fnd-color-semantic-border-danger);  color: #000; }
+
+/* motion helpers */
+@keyframes animations-fade-in { 0% { opacity: 0; } to { opacity: 1; } }
+@keyframes animations-flash   { 50% { opacity: 0; } to { opacity: 1; } }
+@keyframes animations-pulse   { 0% { transform: scale(1); } 50% { transform: scale(1.1); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+.visually-hidden { clip-path: inset(50%); white-space: nowrap; width: 1px; height: 1px; position: absolute; overflow: hidden; }
