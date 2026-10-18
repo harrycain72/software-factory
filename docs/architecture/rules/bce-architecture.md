@@ -8,8 +8,8 @@ function set, or interface. Does not apply to factory-owned paths.
 **Sources:** the BCE pattern as described at [bce.design](https://bce.design/).
 Quoted phrases come from that site. Where the site is silent or only
 "discourages" something, this file makes a project decision and says so.
-These rules supplement the [technical PRD](../../solution/technical-prd.md)
-and define the default seams for
+These rules supplement the project's technical requirements, as named in the
+repository profile, and define the default seams for
 [test-driven-development.md](test-driven-development.md).
 
 ## How to apply these rules
@@ -34,9 +34,9 @@ direction.
   components": related functionality stays together in one domain.
 - Never create top-level technical groupings that span domains, such as
   shared `controllers`, `models`, `services`, or `repositories` collections.
-- Name domains and their contents with terms from
-  [GLOSSARY.md](../../solution/GLOSSARY.md). Do not use a term the glossary
-  lists under _Avoid_.
+- Name domains and their contents with terms from the project's glossary, as
+  named in the repository profile. Do not use a term the glossary lists
+  under _Avoid_.
 - Each glossary concept is owned by exactly one domain. Only the owner holds
   that concept's state and enforces its invariants.
 
@@ -62,8 +62,8 @@ structure is the rule, not the spelling.
 ### 2. Entity: the domain model
 
 - An entity is a core business concept: its data, its relationships, and the
-  rules that must always hold for it, such as "a Lunch Group has 3 to 5
-  Colleagues". Entities may reference and compose other entities in the same
+  rules that must always hold for it, such as "an order has at least one
+  line item". Entities may reference and compose other entities in the same
   domain.
 - An entity may carry declarative persistence mappings, meaning metadata that
   describes how it is stored. It never executes input or output itself: no
@@ -79,8 +79,8 @@ structure is the rule, not the spelling.
 - A control is "stateless procedural logic": the actions and commands that
   carry out business use cases. It manipulates and orchestrates entities and
   owns the transaction and consistency scope of the use case.
-- Name use-case controls as verb phrases from the domain, such as "sign up for
-  Round" or "form Lunch Groups". Map each user story to one or more named
+- Name use-case controls as verb phrases from the domain, such as "place
+  order" or "cancel subscription". Map each user story to one or more named
   control operations.
 - Access to storage and external systems also lives in control, as integration
   controls: loading and saving entities, sending email, reading the clock,
@@ -150,8 +150,8 @@ structure is the rule, not the spelling.
   loading, logging, database connections, email transport, and
   process-event recording mechanics.
 - `platform` contains no business rule and no glossary concept. A
-  domain-specific use of a platform capability, such as the wording of a Match
-  notification, lives in that domain's control layer.
+  domain-specific use of a platform capability, such as the wording of a
+  domain notification, lives in that domain's control layer.
 - Keep `platform` small. Code used by only one domain belongs inside that
   domain.
 
@@ -173,7 +173,7 @@ controls or entities using unit tests." Combined with
 
 - **Default TDD seam:** a domain's use-case control operation, or the plain
   facade a boundary delegates to. `spec.md` names it as the domain plus the
-  operation, for example `rounds: sign up for Round`. Test it as an
+  operation, for example `billing: charge invoice`. Test it as an
   integration test.
 - **Sufficiently complex controls and entities** get their own unit tests.
   Simple ones are covered through the default seam instead.

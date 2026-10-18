@@ -1,11 +1,12 @@
 # API endpoint design rules
 
 **Status:** adopted for new and changed endpoints
-**Scope:** All FastAPI HTTP endpoints: server-rendered pages, forms, downloads,
-health checks, and the JSON extraction API. These rules supplement the
-[technical PRD](../prd/technical-prd.md), especially its route, security, and
-extraction sections. Protocol requirements come from the cited standards;
-other rules are project conventions.
+**Scope:** All HTTP endpoints: server-rendered pages, forms, downloads,
+health checks, and machine-readable APIs. These rules supplement the
+project's technical requirements, as named in the repository profile,
+especially any route, security, and data-export sections. Protocol
+requirements come from the cited standards; other rules are project
+conventions.
 
 ## How to apply these rules
 
@@ -48,15 +49,15 @@ response, errors, access rules, side effects, and tests match the implementation
 - Add a nested collection only when the parent owns or meaningfully scopes the
   child. Keep paths shallow and use opaque, stable identifiers.
 - Do not expose a table, join, or internal storage layout as an endpoint just
-  because it exists in PostgreSQL. Shape responses around client tasks and
+  because it exists in the database. Shape responses around client tasks and
   business concepts.
 - Use standard resource operations where they fit: `GET` reads, `POST` creates
   within a collection, `PATCH` changes supplied mutable fields, `PUT` replaces
   a complete representation, and `DELETE` removes or retires a resource.
 - Model a domain action that does not fit resource lifecycle as an explicit,
   documented action route. State its preconditions, side effects, replay
-  behavior, and result. The existing sign-up and withdrawal form routes are
-  examples of domain actions.
+  behavior, and result. A checkout or password-reset route is a typical
+  example of a domain action.
 
 ### 3. Preserve HTTP method semantics
 
@@ -120,18 +121,19 @@ response, errors, access rules, side effects, and tests match the implementation
   position only; it never grants access.
 - Enforce field-level permissions when serializing responses and applying
   updates. Never bind request JSON directly to an ORM object.
-- Browser routes use the signed session and CSRF protection specified in the
-  technical PRD. `/api/v1/extract/...` uses its bearer token, remains
-  read-only, and must never expose names, emails, or email bodies.
+- Browser routes use the session and CSRF protection the project's technical
+  requirements specify. A machine-to-machine data-export API uses its own
+  bearer-token scheme, stays read-only, and never exposes personal data
+  beyond what its documented contract allows.
 - Enforce authorization when loading records as well as at the route boundary.
   Apply it to exports, counts, and each later page. Validate untrusted IDs
   even when they are opaque or hard to guess.
-- Prefer credentials in authorization headers or secure cookies. The PRD's
-  emailed sign-in link is a narrow exception: it contains a short-lived,
-  single-use token in the URL. Hash it at rest, redeem it only through the
-  confirmation POST, redact its URL from logs and telemetry, prevent referrer
-  disclosure, and mark the page `Cache-Control: no-store`. Do not introduce
-  more URL-token flows without reviewing their exposure.
+- Prefer credentials in authorization headers or secure cookies. An emailed
+  sign-in or confirmation link is a narrow exception: it contains a
+  short-lived, single-use token in the URL. Hash it at rest, redeem it only
+  through the confirmation request, redact its URL from logs and telemetry,
+  prevent referrer disclosure, and mark the page `Cache-Control: no-store`.
+  Do not introduce more URL-token flows without reviewing their exposure.
 - For any endpoint that fetches a caller-supplied URL, allowlist schemes and
   destinations, block private and metadata addresses after DNS resolution,
   and bound redirects and timeouts. Review future webhook and import routes
@@ -151,8 +153,9 @@ response, errors, access rules, side effects, and tests match the implementation
   stable default sort and add a unique tie-breaker so a cursor does not skip or
   duplicate rows merely because equal values changed order.
 - Return an explicit continuation indicator, such as `next_cursor` and
-  `has_more`. The extraction API keeps its PRD-defined gap-free transaction
-  cursor rather than introducing a generic offset scheme.
+  `has_more`. A data-export or audit API may keep its own gap-free cursor
+  scheme instead of a generic offset scheme, when its documented contract
+  requires it.
 
 ### 7. Prevent lost updates
 
@@ -162,7 +165,8 @@ response, errors, access rules, side effects, and tests match the implementation
 - Return `412 Precondition Failed` when an HTTP precondition does not match;
   use `409 Conflict` for a business-state conflict that a caller can resolve.
 - Put each state change and its required audit event in one database
-  transaction. Preserve the PRD's append-only event log and tombstone rules.
+  transaction. Preserve any append-only event log and tombstone/soft-delete
+  rules the project defines.
 - Return `428 Precondition Required` if an endpoint requires `If-Match` and it
   is missing. Recheck mutable business conditions inside the transaction.
   Persist email and webhook work through the outbox so a retry cannot publish
@@ -233,7 +237,7 @@ response, errors, access rules, side effects, and tests match the implementation
 - For a breaking change, publish a new versioned API surface, migration notes,
   a deprecation date, and an overlap period. Use standardized `Deprecation`
   and `Sunset` headers when they help automated clients. Keep `/api/v1` stable
-  for Celonis consumers according to its documented contract.
+  for existing consumers according to its documented contract.
 - Keep OpenAPI, examples, implementation, and tests synchronized. Document
   authentication, errors, rate limits, cursor behavior, and retry rules in
   terms a client developer can use without reading server code.
@@ -281,7 +285,8 @@ response, errors, access rules, side effects, and tests match the implementation
 ## Research basis
 
 Research reviewed on 2026-10-17. These are primary specifications and
-maintainer guidance. Project-specific rules above adapt them to the PRD.
+maintainer guidance. Project-specific rules above adapt them to this
+project's requirements.
 
 - [RFC 9110: HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html) —
   safe and idempotent methods, conditional requests, status codes, and
